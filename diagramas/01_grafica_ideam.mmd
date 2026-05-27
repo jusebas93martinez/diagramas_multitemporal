@@ -1,0 +1,80 @@
+flowchart TD
+    S1([INICIO]) --> S2
+
+    subgraph F1 ["Fase 1: Carga y validación de datos"]
+      direction TB
+      S2["Configurar nombre del sitio y rutas<br/>del CSV de entrada y de las salidas<br/>(4 PNG y 1 informe TXT)"]
+      S3["Leer el CSV mensual de IDEAM<br/>(codificación latin-1)"]
+      S4["Normalizar nombres de columnas<br/>(mayúsculas, sin espacios)"]
+      D1{"¿Tiene las columnas<br/>AÑO, MES y VALOR ?"}
+      FAIL["Reportar columnas faltantes<br/>y terminar el script"]
+      S5["Construir columna de fecha<br/>y ordenar cronológicamente"]
+      S6["Filtrar registros con valor 0<br/>(datos faltantes en IDEAM)"]
+
+      S2 --> S3 --> S4 --> D1
+      D1 -->|"No"| FAIL
+      D1 -->|"Sí"| S5 --> S6
+    end
+
+    S6 --> S7
+
+    subgraph F2 ["Fase 2: Cálculos estadísticos"]
+      direction TB
+      S7["Calcular media móvil de 12 meses<br/>(suaviza la serie temporal)"]
+      S8["Ajustar tendencias lineal y polinómica<br/>(obtiene el cambio por década)"]
+      S9["Calcular estadísticas mensuales<br/>(media, desviación, CV, mínimo, máximo)"]
+      S10["Identificar meses húmedos y secos<br/>respecto a la media histórica"]
+      S11["Calcular estadísticas por décadas"]
+      S12["Calcular percentiles anuales<br/>(P10, P25, P75, P90)"]
+      S13["Clasificar cada año en 5 categorías:<br/>muy húmedo · húmedo · normal ·<br/>seco · muy seco"]
+      S14["Calcular anomalías mensuales<br/>(absolutas y porcentuales)"]
+      S15["Analizar los 10 años más húmedos<br/>(con sus 3 meses más lluviosos)"]
+      S16["Detectar períodos consecutivos<br/>por encima del P75 (de 2 meses o más)"]
+
+      S7 --> S8 --> S9 --> S10 --> S11 --> S12 --> S13 --> S14 --> S15 --> S16
+    end
+
+    S16 --> O1
+
+    subgraph F3 ["Fase 3: Generación de salidas"]
+      direction TB
+      O1["Generar gráfica principal (PNG)<br/>serie mensual + tendencias + anomalías"]
+      O2["Generar tabla intranual (PNG)<br/>matriz año × mes coloreada<br/>por percentiles globales"]
+      O3["Generar tabla interanual (PNG)<br/>matriz año × mes coloreada<br/>por percentiles de cada mes"]
+      O4["Generar heatmap año × mes (PNG)"]
+      O5["Generar informe completo (TXT)<br/>10 secciones: estadísticas, tendencias,<br/>conclusiones y recomendaciones"]
+      O6["Mostrar resumen en consola"]
+
+      O1 --> O2 --> O3 --> O4 --> O5 --> O6
+    end
+
+    O6 --> FIN
+    FIN([FIN: archivos generados])
+
+    style S1   fill:#2E4057,color:#fff
+    style FIN  fill:#2E4057,color:#fff
+
+    style S2   fill:#048A81,color:#fff
+    style S3   fill:#048A81,color:#fff
+    style S4   fill:#048A81,color:#fff
+    style S5   fill:#048A81,color:#fff
+    style S6   fill:#048A81,color:#fff
+    style S7   fill:#048A81,color:#fff
+    style S8   fill:#048A81,color:#fff
+    style S9   fill:#048A81,color:#fff
+    style S10  fill:#048A81,color:#fff
+    style S11  fill:#048A81,color:#fff
+    style S12  fill:#048A81,color:#fff
+    style S13  fill:#048A81,color:#fff
+    style S14  fill:#048A81,color:#fff
+    style S15  fill:#048A81,color:#fff
+    style S16  fill:#048A81,color:#fff
+    style O1   fill:#048A81,color:#fff
+    style O2   fill:#048A81,color:#fff
+    style O3   fill:#048A81,color:#fff
+    style O4   fill:#048A81,color:#fff
+    style O5   fill:#048A81,color:#fff
+    style O6   fill:#4CAF50,color:#fff
+
+    style D1   fill:#F4A261,color:#000
+    style FAIL fill:#E63946,color:#fff

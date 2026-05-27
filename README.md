@@ -21,7 +21,7 @@ editable en [mermaid.live](https://mermaid.live) o
 | # | Código fuente | Descripción | Doc (`.md`) | Editable (`.mmd`) |
 |---|---|---|---|---|
 | 00 | [`00._Descarga_Raster_TRMM.py`](./Codigos/00._Descarga_Raster_TRMM.py) | Descarga precipitación mensual TRMM/GPM desde GEE | ✅ [ver](./diagramas/00_descarga_raster_trmm_gpm.md) | ✅ [abrir](./diagramas/00_descarga_raster_trmm_gpm.mmd) |
-| 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Gráficas de series IDEAM | ⏳ | ⏳ |
+| 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Análisis estadístico de serie IDEAM (4 PNG + informe TXT) | ✅ [ver](./diagramas/01_grafica_ideam.md) | ✅ [abrir](./diagramas/01_grafica_ideam.mmd) |
 | 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Gráficas IDEAM (variante lineal/métrica) | ⏳ | ⏳ |
 | 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | Gráficas de precipitación satelital | ⏳ | ⏳ |
 | 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ | ⏳ |
@@ -65,8 +65,23 @@ diagramas_multitemporal/
 │   ├── 00._Descarga_Raster_TRMM.py
 │   ├── 01_Grafica_ideam.py
 │   └── ...
-└── diagramas/                      ← un .md por script
-    └── 00_descarga_raster_trmm_gpm.md
+├── diagramas/                      ← un .md + .mmd por script
+│   ├── 00_descarga_raster_trmm_gpm.md
+│   ├── 00_descarga_raster_trmm_gpm.mmd
+│   ├── 01_grafica_ideam.md
+│   └── 01_grafica_ideam.mmd
+└── scripts/
+    └── sync_mmd.py                 ← inyecta el .mmd dentro del .md
+```
+
+### Sincronización `.mmd` → `.md`
+
+Cuando edites un `.mmd`, ejecuta para reflejar el cambio en el `.md`:
+
+```bash
+python scripts/sync_mmd.py diagramas/01_grafica_ideam.mmd   # uno solo
+python scripts/sync_mmd.py --all                            # todos
+python scripts/sync_mmd.py --check                          # verifica sin tocar
 ```
 
 ---
