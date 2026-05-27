@@ -26,7 +26,7 @@ editable en [mermaid.live](https://mermaid.live) o
 | 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | TRMM/GPM en un punto + cruce con IDEAM (12 salidas, filtro La Niña, normativa IDEAM 2018) | ✅ [ver](./diagramas/02_grafica_precipitacion_satelital_trmm.md) | ✅ [abrir](./diagramas/02_grafica_precipitacion_satelital_trmm.mmd) |
 | 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Mosaicos multimisión S2 + Landsat 1-9 con relleno de nubes y tiling dinámico | ✅ [ver](./diagramas/03_descarga_imagenes_pro.md) | ✅ [abrir](./diagramas/03_descarga_imagenes_pro.mmd) |
 | 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección manual/automática + relleno + mosaico de agua persistente (MNDWI) | ✅ [ver](./diagramas/04_seleccion_mejores_imagenes.md) | ✅ [abrir](./diagramas/04_seleccion_mejores_imagenes.mmd) |
-| 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ⏳ | ⏳ |
+| 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ✅ [ver](./diagramas/05_descarga_imagen_sar.md) | ✅ [abrir](./diagramas/05_descarga_imagen_sar.mmd) |
 | 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ | ⏳ |
 | 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ⏳ | ⏳ |
 | 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ⏳ | ⏳ |

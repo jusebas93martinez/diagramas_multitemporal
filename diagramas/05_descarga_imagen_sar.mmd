@@ -1,0 +1,96 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar parámetros:<br/>rutas, fecha central, ventana (±días),<br/>órbita preferida, CRS, escala, buffer,<br/>umbral dB para agua"] --> INIT
+    INIT["Inicializar Earth Engine<br/>(proyecto precipitaciones-459216)"] --> LOAD
+
+    LOAD["Cargar shapefile del área de interés"] --> BUFF
+    BUFF["Crear región con buffer<br/>(+3000 m) y bounding box"] --> TILES
+    TILES["Dividir región en tiles 2×2<br/>SW, NW, SE, NE"] --> FECHAS
+
+    FECHAS["Calcular rango de fechas<br/>fecha central ± DIAS_VENTANA"] --> BUSCAR1
+
+    BUSCAR1["Buscar colección S1 GRD<br/>• Modo IW  • VV+VH<br/>• Órbita preferida"] --> D1
+
+    D1{"¿Hay imágenes<br/>en órbita preferida?"} -->|"Sí"| LISTAR
+    D1 -->|"No"| BUSCAR2
+
+    BUSCAR2["Buscar con órbita alterna<br/>(DESCENDING ↔ ASCENDING)"] --> D2
+
+    D2{"¿Hay imágenes<br/>en órbita alterna?"} -->|"Sí"| LISTAR
+    D2 -->|"No"| AMP
+
+    AMP["Ampliar ventana al doble<br/>y buscar sin filtro de órbita"] --> D3
+
+    D3{"¿Hay imágenes<br/>tras ampliar ventana?"} -->|"Sí"| LISTAR
+    D3 -->|"No"| ERR
+
+    ERR["ERROR: sin imágenes SAR<br/>disponibles para región/periodo"] --> ERR_EXIT
+    ERR_EXIT([FIN — error])
+
+    LISTAR["Listar fechas únicas<br/>de las imágenes encontradas"] --> COMP
+
+    COMP["Crear composite median<br/>(VV y VH) — reduce speckle"] --> LOOP
+
+    LOOP["/Para cada tile<br/>(SW, NW, SE, NE)/"] --> DESC
+    DESC["Exportar tile a GeoTIFF<br/>vía geemap.ee_export_image"] --> D_TILE
+    D_TILE{"¿Tile descargado<br/>y no vacío?"} -->|"Sí"| GUARDAR_TILE
+    D_TILE -->|"No / error"| OMIT_TILE
+    GUARDAR_TILE["Agregar ruta a lista<br/>de tiles válidos"] --> LOOP
+    OMIT_TILE["Omitir tile"] --> LOOP
+
+    LOOP --> MERGE
+
+    MERGE["Merge de tiles con rasterio<br/>(Resampling.nearest + compresión LZW)"] --> D_MERGE
+    D_MERGE{"¿Mosaico creado<br/>exitosamente?"} -->|"Sí"| CLEAN
+    D_MERGE -->|"No"| ERR_MERGE
+
+    ERR_MERGE["ERROR: no se pudo<br/>generar el mosaico"] --> ERR_EXIT
+
+    CLEAN["Eliminar tiles temporales<br/>(opcional)"] --> CLASIF
+
+    CLASIF["Clasificación binaria de agua:<br/>VV < umbral dB → agua (1),<br/>de lo contrario no-agua (0)"] --> STATS
+
+    STATS["Calcular estadísticas:<br/>pixeles válidos, pixeles agua,<br/>porcentaje de agua"] --> SAVE
+
+    SAVE["Guardar TIF binario<br/>(uint8, nodata=255, LZW)"] --> RES
+
+    RES["Mostrar resumen en consola:<br/>periodo, órbita, N imágenes,<br/>umbral, % agua detectada"] --> END_NODE
+
+    END_NODE([FIN: composite SAR<br/>+ binario de agua generados])
+
+    style START      fill:#2E4057,color:#fff
+    style END_NODE   fill:#2E4057,color:#fff
+    style ERR_EXIT   fill:#2E4057,color:#fff
+
+    style CFG        fill:#048A81,color:#fff
+    style INIT       fill:#048A81,color:#fff
+    style LOAD       fill:#048A81,color:#fff
+    style BUFF       fill:#048A81,color:#fff
+    style TILES      fill:#048A81,color:#fff
+    style FECHAS     fill:#048A81,color:#fff
+    style BUSCAR1    fill:#048A81,color:#fff
+    style BUSCAR2    fill:#048A81,color:#fff
+    style AMP        fill:#048A81,color:#fff
+    style LISTAR     fill:#048A81,color:#fff
+    style COMP       fill:#048A81,color:#fff
+    style DESC       fill:#048A81,color:#fff
+    style GUARDAR_TILE fill:#048A81,color:#fff
+    style MERGE      fill:#048A81,color:#fff
+    style CLEAN      fill:#048A81,color:#fff
+    style CLASIF     fill:#048A81,color:#fff
+    style STATS      fill:#048A81,color:#fff
+    style SAVE       fill:#048A81,color:#fff
+    style RES        fill:#4CAF50,color:#fff
+
+    style LOOP       fill:#54478C,color:#fff
+
+    style D1         fill:#F4A261,color:#000
+    style D2         fill:#F4A261,color:#000
+    style D3         fill:#F4A261,color:#000
+    style D_TILE     fill:#F4A261,color:#000
+    style D_MERGE    fill:#F4A261,color:#000
+
+    style ERR        fill:#E63946,color:#fff
+    style ERR_MERGE  fill:#E63946,color:#fff
+    style OMIT_TILE  fill:#607D8B,color:#fff
