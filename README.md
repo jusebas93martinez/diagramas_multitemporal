@@ -1,22 +1,39 @@
 # Diagramas Multitemporal
 
-Repositorio de documentación técnica con **diagramas Mermaid** que describen
-pipelines de análisis multitemporal sobre datos geoespaciales (precipitación,
-índices de vegetación, temperatura, etc.).
+Repositorio de **documentación técnica con diagramas Mermaid** de un pipeline
+geoespacial multitemporal: descarga de precipitación satelital, procesamiento
+de imágenes ópticas y SAR (Sentinel-1/2), generación de máscaras de agua,
+análisis geomorfológico, clasificación de coberturas y generación de salidas
+gráficas para informes.
 
-Los diagramas se visualizan nativamente en GitHub y localmente en VS Code con
-la extensión *Markdown Preview Mermaid Support*.
+Cada diagrama documenta **un script Python** ubicado en
+[`Codigos/`](./Codigos/) y se visualiza nativamente en GitHub.
 
 ---
 
-## Índice de análisis
+## Índice de diagramas
 
-| # | Análisis | Estado | Diagramas |
-|---|----------|--------|-----------|
-| 1 | Precipitación TRMM/GPM (Colombia) | en construcción | [ver carpeta](./diagramas/) |
+| # | Código fuente | Descripción | Diagrama |
+|---|---|---|---|
+| 00 | [`00._Descarga_Raster_TRMM.py`](./Codigos/00._Descarga_Raster_TRMM.py) | Descarga precipitación mensual TRMM/GPM desde GEE | ✅ [ver](./diagramas/00_descarga_raster_trmm_gpm.md) |
+| 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Gráficas de series IDEAM | ⏳ pendiente |
+| 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Gráficas IDEAM (variante lineal/métrica) | ⏳ pendiente |
+| 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | Gráficas de precipitación satelital | ⏳ pendiente |
+| 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ pendiente |
+| 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección de mejores imágenes por nubosidad | ⏳ pendiente |
+| 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ⏳ pendiente |
+| 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ pendiente |
+| 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ⏳ pendiente |
+| 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ⏳ pendiente |
+| 09 | [`09. Descargar Multibanda S2.py`](./Codigos/09.%20Descargar%20Multibanda%20S2.py) | Descarga multibanda Sentinel-2 | ⏳ pendiente |
+| 10 | [`10. COBERTURAS.py`](./Codigos/10.%20COBERTURAS.py) | Generación de capas de coberturas | ⏳ pendiente |
+| 11 | [`11 .UNIR_COMPONENTES.py`](./Codigos/11%20.UNIR_COMPONENTES.py) | Unión de componentes (insumos modelo) | ⏳ pendiente |
+| 12 | [`12. ENTRENAR_MODELO_COBERTURAS.py`](./Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py) | Entrenamiento modelo clasificación coberturas | ⏳ pendiente |
+| 13 | [`13. SALIDAS_GRAFICAS_INFORME.py`](./Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py) | Salidas gráficas para informe | ⏳ pendiente |
+| 14 | [`14. salida_graficas_compuestas.py`](./Codigos/14.%20salida_graficas_compuestas.py) | Salidas gráficas compuestas | ⏳ pendiente |
+| ▣ | — | **Diagrama general del pipeline completo** | ⏳ pendiente |
 
-> A medida que se agreguen nuevos análisis multitemporales (NDVI, LST, etc.)
-> se irán listando en esta tabla con su propio set de diagramas.
+> Leyenda: ✅ documentado · ⏳ pendiente · 🔧 en revisión
 
 ---
 
@@ -24,39 +41,38 @@ la extensión *Markdown Preview Mermaid Support*.
 
 ```
 diagramas_multitemporal/
-├── README.md                        ← índice general (este archivo)
-├── CLAUDE.md                        ← contexto técnico análisis TRMM/GPM
-├── diagramas/
-│   ├── 01_flujo_descarga.md
-│   ├── 02_flujo_procesamiento.md
-│   ├── 03_arquitectura_datos.md
-│   ├── 04_pipeline_gee.md
-│   └── 05_decisiones_clave.md
-├── scripts/
-│   └── validar_mermaid.py
-└── .vscode/
-    └── extensions.json
+├── README.md                       ← este archivo (índice general)
+├── CLAUDE.md                       ← contexto técnico (TRMM/GPM y convenciones)
+├── Codigos/                        ← scripts Python originales (16)
+│   ├── 00._Descarga_Raster_TRMM.py
+│   ├── 01_Grafica_ideam.py
+│   └── ...
+└── diagramas/                      ← un .md por script
+    └── 00_descarga_raster_trmm_gpm.md
 ```
 
 ---
 
 ## Visualización
 
-- **En GitHub:** abrir cualquier archivo `.md` dentro de `diagramas/` y los
-  bloques ```` ```mermaid ```` se renderizan automáticamente.
+- **En GitHub:** abre cualquier `.md` dentro de `diagramas/` y los bloques
+  ```` ```mermaid ```` se renderizan automáticamente.
 - **En VS Code:** `Ctrl + Shift + V` sobre el archivo `.md`.
+  Se recomiendan las extensiones listadas en `.vscode/extensions.json`.
 
 ## Convenciones
 
-Todos los diagramas siguen una paleta de colores y nomenclatura estándar
-definida en [`CLAUDE.md`](./CLAUDE.md) (sección *Convenciones de diagramas*).
+Todos los diagramas siguen una **paleta de colores y nomenclatura estándar**
+definida en [`CLAUDE.md`](./CLAUDE.md) (sección *Convenciones de diagramas*):
 
-## Validación local (opcional)
-
-```bash
-# Con Node.js instalado
-npm install -g @mermaid-js/mermaid-cli
-
-# O usando el script del proyecto
-python scripts/validar_mermaid.py diagramas/01_flujo_descarga.md
-```
+| Color | Uso |
+|---|---|
+| 🟦 `#2E4057` | Terminadores (INICIO / FIN) |
+| 🟩 `#048A81` | Procesos |
+| 🟪 `#54478C` | Bucles FOR |
+| 🟧 `#F4A261` | Decisiones |
+| 🟦 `#2196F3` | Fuente TRMM |
+| 🟪 `#9C27B0` | Fuente GPM |
+| 🟥 `#E63946` | Error / sin datos |
+| ⬜ `#607D8B` | Omitir (archivo ya existe) |
+| 🟢 `#4CAF50` | OK / éxito |
