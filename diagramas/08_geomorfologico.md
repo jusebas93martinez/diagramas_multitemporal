@@ -257,3 +257,11 @@ Tras editar, sincroniza con:
 ```bash
 python scripts/sync_mmd.py diagramas/08_geomorfologico.mmd
 ```
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

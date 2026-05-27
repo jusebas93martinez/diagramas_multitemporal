@@ -171,3 +171,11 @@ Tras editar, sincroniza con:
 ```bash
 python scripts/sync_mmd.py diagramas/12_entrenar_modelo_coberturas.mmd
 ```
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

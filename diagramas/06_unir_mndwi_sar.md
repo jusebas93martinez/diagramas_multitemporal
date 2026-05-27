@@ -236,3 +236,11 @@ Tras editar, sincroniza con:
 ```bash
 python scripts/sync_mmd.py diagramas/06_unir_mndwi_sar.mmd
 ```
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

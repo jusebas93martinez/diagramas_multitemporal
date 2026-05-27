@@ -191,3 +191,11 @@ Tras editar, sincroniza con:
 ```bash
 python scripts/sync_mmd.py diagramas/09_descargar_multibanda_s2.mmd
 ```
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

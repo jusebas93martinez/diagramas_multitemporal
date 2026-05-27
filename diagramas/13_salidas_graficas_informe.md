@@ -227,3 +227,11 @@ Tras editar, sincroniza con:
 ```bash
 python scripts/sync_mmd.py diagramas/13_salidas_graficas_informe.mmd
 ```
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

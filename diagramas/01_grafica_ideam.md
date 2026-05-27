@@ -224,3 +224,11 @@ python scripts/sync_mmd.py diagramas/01_grafica_ideam.mmd
 Esto inyecta automáticamente el contenido del `.mmd` dentro del bloque
 ```` ```mermaid ```` de este `.md`. Para sincronizar todos los diagramas a
 la vez: `python scripts/sync_mmd.py --all`.
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |

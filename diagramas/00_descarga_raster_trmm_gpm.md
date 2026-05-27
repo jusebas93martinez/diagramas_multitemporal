@@ -227,3 +227,11 @@ editarlo en herramientas visuales:
 > mantener el `.mmd` y el bloque ```` ```mermaid ```` de este `.md`
 > **idénticos**. El `.mmd` es la fuente editable; el bloque del `.md` es la
 > copia que GitHub renderiza.
+
+---
+
+## Changelog
+
+| Fecha | Cambio |
+|---|---|
+| 2026-05-27 | Creación inicial |
