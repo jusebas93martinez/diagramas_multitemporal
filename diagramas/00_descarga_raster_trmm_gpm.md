@@ -35,39 +35,38 @@ mm/mes y resolución de 10 km.
 ```mermaid
 flowchart TD
     S1([INICIO]) --> S2
-    S2["1. Autenticar e inicializar GEE<br/>proyecto: precipitaciones-459216"] --> S3
-    S3["2. Cargar AOI Colombia<br/>FAO/GAUL/2015/level0<br/>filter ADM0_NAME = Colombia"] --> S4
-    S4["geometry = col_fc.geometry().bounds()"] --> S5
-    S5["3. Parametros:<br/>rango 1997-08 a 2026-04<br/>EXPORT_SCALE_METERS = 10000<br/>output_dir = precipitacion_mensual_colombia_10km"] --> S6
-    S6["os.makedirs(output_dir, exist_ok=True)"] --> L1
-    L1[/"PARA cada año en 1997..2026"/] --> S7
-    S7["first_month = 8 si year==1997 sino 1<br/>last_month  = 4 si year==2026 sino 12"] --> L2
-    L2[/"PARA cada mes en first_month..last_month"/] --> S8
-    S8["start_date = ee.Date.fromYMD(year, month, 1)<br/>end_date   = start_date.advance(1, 'month')<br/>dias_mes   = monthrange(year, month)[1]"] --> D1
-    D1{"año &lt;= 2014 ?"}
-    D1 -->|"Sí"| C1["coleccion = TRMM/3B43V7<br/>.select('precipitation')<br/>source = TRMM"]
-    D1 -->|"No"| C2["coleccion = NASA/GPM_L3/IMERG_MONTHLY_V07<br/>.select('precipitation')<br/>source = GPM IMERG"]
+    S2["Autenticarse en<br/>Google Earth Engine"] --> S3
+    S3["Cargar el área de estudio: Colombia<br/>y obtener su rectángulo envolvente"] --> S5
+    S5["Definir parámetros:<br/>• Rango temporal: ago-1997 a abr-2026<br/>• Resolución: 10 km por píxel<br/>• Carpeta local de salida"] --> S6
+    S6["Crear la carpeta de salida<br/>si todavía no existe"] --> L1
+    L1[/"Para cada año<br/>desde 1997 hasta 2026"/] --> S7
+    S7["Determinar el primer y último mes<br/>que corresponden a este año<br/>(el rango se acorta en años extremos)"] --> L2
+    L2[/"Para cada mes del año<br/>dentro del rango calculado"/] --> S8
+    S8["Calcular las fechas de inicio y fin<br/>del mes y cuántos días tiene"] --> D1
+    D1{"¿El año es 2014<br/>o anterior?"}
+    D1 -->|"Sí"| C1["Usar colección satelital TRMM<br/>(precipitación en mm/hora)"]
+    D1 -->|"No"| C2["Usar colección satelital GPM IMERG mensual<br/>(precipitación en mm/hora)"]
     C1 --> S9
     C2 --> S9
-    S9["coll_period = coleccion.filterDate(start_date, end_date)"] --> D2
-    D2{"coll_period.size() == 0 ?"}
-    D2 -->|"Sí"| SK1["Print: No hay datos source<br/>continuar"]
-    D2 -->|"No"| S10
-    S10["rate_image = coll_period.first()  (mm/hr)<br/>horas_mes  = dias_mes * 24<br/>total      = rate_image.multiply(horas_mes)<br/>rename: monthly_precipitation_mm"] --> S11
-    S11["fname    = precip_mensual_YYYY_MM_colombia_10km.tif<br/>out_path = output_dir / fname"] --> D3
-    D3{"os.path.exists(out_path) ?"}
-    D3 -->|"Sí"| SK2["Print: ya existe<br/>continuar"]
+    S9["Filtrar la colección al mes actual"] --> D2
+    D2{"¿Existen datos satelitales<br/>para este mes?"}
+    D2 -->|"No"| SK1["Reportar mes sin datos<br/>y pasar al siguiente mes"]
+    D2 -->|"Sí"| S10
+    S10["Convertir la tasa de precipitación<br/>(mm/hora) en acumulado del mes (mm)<br/>multiplicando por las horas del mes"] --> S11
+    S11["Construir el nombre del archivo<br/>de salida para este mes"] --> D3
+    D3{"¿El archivo del mes<br/>ya está descargado?"}
+    D3 -->|"Sí"| SK2["Omitir descarga<br/>(el mes ya estaba listo)"]
     D3 -->|"No"| T1
-    T1["INTENTAR: getDownloadURL<br/>scale=10000, crs=EPSG:4326,<br/>region=geometry, format=GEO_TIFF"] --> S12
-    S12["requests.get(url, stream=True)<br/>resp.raise_for_status()"] --> D4
-    D4{"¿Contenido es ZIP ?"}
-    D4 -->|"Sí"| Z1["zipfile.ZipFile -> extraer .tif<br/>guardar en out_path"]
-    D4 -->|"No"| Z2["Guardar content directo<br/>en out_path"]
+    T1["Solicitar a Google Earth Engine<br/>una URL de descarga del raster<br/>(formato GeoTIFF, EPSG:4326, 10 km)"] --> S12
+    S12["Descargar el archivo<br/>desde la URL"] --> D4
+    D4{"¿La descarga vino<br/>comprimida en ZIP?"}
+    D4 -->|"Sí"| Z1["Descomprimir el ZIP<br/>y extraer el GeoTIFF"]
+    D4 -->|"No"| Z2["Guardar el GeoTIFF<br/>directamente"]
     Z1 --> OK
     Z2 --> OK
-    OK["Print: Guardado out_path"]
+    OK["Mes descargado y<br/>guardado correctamente"]
 
-    S12 -.->|"Excepción"| ERR["Print: Error al procesar"]
+    S12 -.->|"Si ocurre un error"| ERR["Reportar error de descarga<br/>(sin detener el proceso)"]
 
     OK  --> L2
     ERR --> L2
@@ -76,14 +75,13 @@ flowchart TD
 
     L2 -.->|"fin del mes"| L1
     L1 -.->|"fin del año"| FIN
-    FIN([FIN: Proceso completado])
+    FIN([FIN:<br/>todos los meses procesados])
 
     style S1   fill:#2E4057,color:#fff
     style FIN  fill:#2E4057,color:#fff
 
     style S2   fill:#048A81,color:#fff
     style S3   fill:#048A81,color:#fff
-    style S4   fill:#048A81,color:#fff
     style S5   fill:#048A81,color:#fff
     style S6   fill:#048A81,color:#fff
     style S7   fill:#048A81,color:#fff
