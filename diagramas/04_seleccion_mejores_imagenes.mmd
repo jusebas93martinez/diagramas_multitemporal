@@ -1,0 +1,107 @@
+flowchart TD
+    S1([INICIO]) --> S2
+
+    subgraph F1 ["Fase 1: Configuración y elección de modo"]
+      direction TB
+      S2["Configurar rutas (logs, salida final, mejores.txt),<br/>umbrales de nubes (25%) y de MNDWI por sensor"]
+      S3["Crear la carpeta de salida si no existe"]
+      D1{"¿Existe el archivo<br/>mejores.txt ?"}
+
+      S2 --> S3 --> D1
+    end
+
+    D1 -->|"Sí (selección manual)"| MA1
+    D1 -->|"No (procesar logs automáticamente)"| LB1
+
+    subgraph F2A ["Fase 2A: Modo MANUAL — usar la selección del usuario"]
+      direction TB
+      MA1["Leer cada línea de mejores.txt<br/>(formato AÑO_MES_NOM_MISION_FECHA)"]
+      LA[/"Para cada línea válida"/]
+      MA2["Copiar los productos RGB, MNDWI, IR y NDWI<br/>desde sus carpetas a MEJORES_POR_AÑO"]
+      MA3["Construir la estructura todos_los_datos<br/>para alimentar reportes y tablas"]
+
+      MA1 --> LA --> MA2 --> MA3
+    end
+
+    subgraph F2B ["Fase 2B: Modo AUTOMÁTICO — analizar logs y seleccionar por píxeles"]
+      direction TB
+      LB1[/"Para cada log .log/.txt<br/>en la carpeta LOGS"/]
+      MB1["Detectar versión del log (v6 o v7)<br/>y parsear meses, misiones y candidatos"]
+      MB2["Detectar el año desde los nombres<br/>de archivos exportados o el del log"]
+      D2{"¿Hay datos<br/>válidos en el log ?"}
+      MB3["Abrir cada candidato a resolución reducida<br/>(submuestreo factor 20) y contar pixeles<br/>blancos en RGB para estimar el % de nubes real"]
+      MB4["Elegir el candidato ganador (menor % nubes<br/>real, por debajo del umbral 25%)"]
+      MB5["Copiar los productos del ganador<br/>(RGB, MNDWI, IR / NDWI) a MEJORES_POR_AÑO"]
+      MB6["Detectar la máscara inválida del ganador<br/>(pixeles con nube o NoData en RGB)"]
+      D3{"¿Hay pixeles<br/>inválidos por rellenar ?"}
+      MB7["Rellenar primero con candidatos locales<br/>del mismo año (otros meses ya descargados)"]
+      D4{"¿Quedan huecos<br/>tras el relleno local ?"}
+      MB8["Solicitar a GEE una mediana del año<br/>para los pixeles aún faltantes y aplicarla"]
+      ENDLOG["Guardar info del año en todos_los_datos"]
+
+      LB1 --> MB1 --> MB2 --> D2
+      D2 -->|"No"| ENDLOG
+      D2 -->|"Sí"| MB3 --> MB4 --> MB5 --> MB6 --> D3
+      D3 -->|"No"| ENDLOG
+      D3 -->|"Sí"| MB7 --> D4
+      D4 -->|"No"| ENDLOG
+      D4 -->|"Sí"| MB8 --> ENDLOG
+      ENDLOG -.->|"siguiente log"| LB1
+    end
+
+    MA3 --> O1
+    ENDLOG -->|"fin del bucle"| O1
+
+    subgraph F3 ["Fase 3: Reportes y mosaico de agua persistente (MNDWI)"]
+      direction TB
+      O1["Generar la tabla PNG de seleccionadas<br/>(una fila por año)"]
+      O2["Generar el reporte TXT completo<br/>(todos los meses y misiones considerados)"]
+      O3["Generar la tabla PNG completa<br/>(una fila por misión × mes con detalles)"]
+      O4["Para cada MNDWI seleccionado, clasificar<br/>cada pixel en agua o no-agua usando el<br/>umbral propio del sensor"]
+      O5["Acumular frecuencia de agua y conteo<br/>de observaciones válidas por pixel"]
+      O6["Generar capas multitemporales TIF:<br/>• Agua_{año}_{sensor}.tif por imagen<br/>• Frecuencia_Total_MNDWI.tif<br/>• Conteo_Observaciones_Validas.tif<br/>• Frecuencia_Normalizada_MNDWI.tif<br/>• Clasificacion_Permanencia_Hidrica.tif"]
+      O7["Generar el binario MNDWI final:<br/>filtrar por frecuencia mínima ≥ 2<br/>y suavizar con ventana 2×2 (opcional)"]
+      O8["Mostrar resumen en consola"]
+
+      O1 --> O2 --> O3 --> O4 --> O5 --> O6 --> O7 --> O8
+    end
+
+    O8 --> FIN
+    FIN([FIN: archivos copiados, reportes y capas MNDWI generados])
+
+    style S1   fill:#2E4057,color:#fff
+    style FIN  fill:#2E4057,color:#fff
+
+    style S2   fill:#048A81,color:#fff
+    style S3   fill:#048A81,color:#fff
+
+    style MA1  fill:#048A81,color:#fff
+    style MA2  fill:#048A81,color:#fff
+    style MA3  fill:#048A81,color:#fff
+
+    style MB1  fill:#048A81,color:#fff
+    style MB2  fill:#048A81,color:#fff
+    style MB3  fill:#048A81,color:#fff
+    style MB4  fill:#048A81,color:#fff
+    style MB5  fill:#048A81,color:#fff
+    style MB6  fill:#048A81,color:#fff
+    style MB7  fill:#048A81,color:#fff
+    style MB8  fill:#048A81,color:#fff
+    style ENDLOG fill:#048A81,color:#fff
+
+    style O1   fill:#048A81,color:#fff
+    style O2   fill:#048A81,color:#fff
+    style O3   fill:#048A81,color:#fff
+    style O4   fill:#048A81,color:#fff
+    style O5   fill:#048A81,color:#fff
+    style O6   fill:#048A81,color:#fff
+    style O7   fill:#048A81,color:#fff
+    style O8   fill:#4CAF50,color:#fff
+
+    style LA   fill:#54478C,color:#fff
+    style LB1  fill:#54478C,color:#fff
+
+    style D1   fill:#F4A261,color:#000
+    style D2   fill:#F4A261,color:#000
+    style D3   fill:#F4A261,color:#000
+    style D4   fill:#F4A261,color:#000
