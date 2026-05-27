@@ -27,16 +27,16 @@ editable en [mermaid.live](https://mermaid.live) o
 | 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Mosaicos multimisión S2 + Landsat 1-9 con relleno de nubes y tiling dinámico | ✅ [ver](./diagramas/03_descarga_imagenes_pro.md) | ✅ [abrir](./diagramas/03_descarga_imagenes_pro.mmd) |
 | 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección manual/automática + relleno + mosaico de agua persistente (MNDWI) | ✅ [ver](./diagramas/04_seleccion_mejores_imagenes.md) | ✅ [abrir](./diagramas/04_seleccion_mejores_imagenes.mmd) |
 | 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ✅ [ver](./diagramas/05_descarga_imagen_sar.md) | ✅ [abrir](./diagramas/05_descarga_imagen_sar.mmd) |
-| 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ | ⏳ |
-| 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ⏳ | ⏳ |
-| 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ⏳ | ⏳ |
-| 09 | [`09. Descargar Multibanda S2.py`](./Codigos/09.%20Descargar%20Multibanda%20S2.py) | Descarga multibanda Sentinel-2 | ⏳ | ⏳ |
-| 10 | [`10. COBERTURAS.py`](./Codigos/10.%20COBERTURAS.py) | Generación de capas de coberturas | ⏳ | ⏳ |
-| 11 | [`11 .UNIR_COMPONENTES.py`](./Codigos/11%20.UNIR_COMPONENTES.py) | Unión de componentes (insumos modelo) | ⏳ | ⏳ |
-| 12 | [`12. ENTRENAR_MODELO_COBERTURAS.py`](./Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py) | Entrenamiento modelo clasificación coberturas | ⏳ | ⏳ |
-| 13 | [`13. SALIDAS_GRAFICAS_INFORME.py`](./Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py) | Salidas gráficas para informe | ⏳ | ⏳ |
-| 14 | [`14. salida_graficas_compuestas.py`](./Codigos/14.%20salida_graficas_compuestas.py) | Salidas gráficas compuestas | ⏳ | ⏳ |
-| ▣ | — | **Diagrama general del pipeline completo** | ⏳ | ⏳ |
+| 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ✅ [ver](./diagramas/06_unir_mndwi_sar.md) | ✅ [abrir](./diagramas/06_unir_mndwi_sar.mmd) |
+| 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ✅ [ver](./diagramas/07_extraer_mas_agua.md) | ✅ [abrir](./diagramas/07_extraer_mas_agua.mmd) |
+| 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ✅ [ver](./diagramas/08_geomorfologico.md) | ✅ [abrir](./diagramas/08_geomorfologico.mmd) |
+| 09 | [`09. Descargar Multibanda S2.py`](./Codigos/09.%20Descargar%20Multibanda%20S2.py) | Descarga multibanda Sentinel-2 | ✅ [ver](./diagramas/09_descargar_multibanda_s2.md) | ✅ [abrir](./diagramas/09_descargar_multibanda_s2.mmd) |
+| 10 | [`10. COBERTURAS.py`](./Codigos/10.%20COBERTURAS.py) | Generación de capas de coberturas | ✅ [ver](./diagramas/10_coberturas.md) | ✅ [abrir](./diagramas/10_coberturas.mmd) |
+| 11 | [`11 .UNIR_COMPONENTES.py`](./Codigos/11%20.UNIR_COMPONENTES.py) | Unión de componentes (insumos modelo) | ✅ [ver](./diagramas/11_unir_componentes.md) | ✅ [abrir](./diagramas/11_unir_componentes.mmd) |
+| 12 | [`12. ENTRENAR_MODELO_COBERTURAS.py`](./Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py) | Entrenamiento modelo clasificación coberturas | ✅ [ver](./diagramas/12_entrenar_modelo_coberturas.md) | ✅ [abrir](./diagramas/12_entrenar_modelo_coberturas.mmd) |
+| 13 | [`13. SALIDAS_GRAFICAS_INFORME.py`](./Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py) | Salidas gráficas para informe | ✅ [ver](./diagramas/13_salidas_graficas_informe.md) | ✅ [abrir](./diagramas/13_salidas_graficas_informe.mmd) |
+| 14 | [`14. salida_graficas_compuestas.py`](./Codigos/14.%20salida_graficas_compuestas.py) | Salidas gráficas compuestas | ✅ [ver](./diagramas/14_salidas_graficas_compuestas.md) | ✅ [abrir](./diagramas/14_salidas_graficas_compuestas.mmd) |
+| ▣ | — | **Diagrama general del pipeline completo** | ✅ [ver](./diagramas/general_pipeline_completo.md) | ✅ [abrir](./diagramas/general_pipeline_completo.mmd) |
 
 > Leyenda: ✅ documentado · ⏳ pendiente · 🔧 en revisión
 

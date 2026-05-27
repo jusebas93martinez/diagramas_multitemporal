@@ -1,0 +1,76 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar:<br/>lat/lon centro, lado_km,<br/>fecha objetivo, CRS,<br/>bandas (B2/B3/B4/B8/B11/B12),<br/>tiles (2×2)"] --> INIT
+    INIT["Inicializar Earth Engine"] --> REGION
+
+    REGION["Crear región:<br/>buffer desde punto central<br/>→ cuadrado de lado_km"] --> TILES
+    TILES["Dividir región en tiles<br/>(2×2 por defecto)"] --> BUSCAR
+
+    BUSCAR["Buscar imágenes S2<br/>para fecha objetivo"] --> D1
+    D1{"¿Hay imágenes<br/>SR_HARMONIZED?"} -->|"Sí"| LISTA_SR
+    D1 -->|"No"| FALLBACK
+    FALLBACK["Buscar imágenes<br/>Sentinel-2 L1C (TOA)"] --> D2
+    D2{"¿Hay imágenes L1C?"} -->|"Sí"| LISTA_L1C
+    D2 -->|"No"| ERR
+
+    ERR["ERROR: sin imágenes<br/>para la fecha"] --> ERR_EXIT
+    ERR_EXIT([FIN — error])
+
+    LISTA_SR["Listar imágenes SR<br/>con metadatos de nubes"] --> LOOP_IMG
+    LISTA_L1C["Listar imágenes L1C<br/>(advertir: sin corrección atmosférica)"] --> LOOP_IMG
+
+    LOOP_IMG["/Para cada imagen<br/>encontrada/"] --> LOOP_TILE
+    LOOP_TILE["/Para cada tile/"] --> DESC
+    DESC["Exportar tile a GeoTIFF<br/>vía geemap.ee_export_image<br/>(10 m, CRS UTM)"] --> D_TILE
+    D_TILE{"¿Tile descargado<br/>y no vacío?"} -->|"Sí"| GUARDAR_TILE
+    D_TILE -->|"No"| OMIT_TILE
+    GUARDAR_TILE["Agregar a lista<br/>de tiles válidos"] --> LOOP_TILE
+    OMIT_TILE["Omitir tile"] --> LOOP_TILE
+    LOOP_TILE --> MERGE
+
+    MERGE["Merge de tiles<br/>con rasterio.merge"] --> D_MERGE
+    D_MERGE{"¿Merge exitoso?"} -->|"Sí"| LIMPIAR
+    D_MERGE -->|"No"| ERR_MERGE
+    ERR_MERGE["ERROR: no se pudo<br/>fusionar tiles"] --> ERR_EXIT
+
+    LIMPIAR["Eliminar tiles temporales"] --> VERIFICAR
+    VERIFICAR["Verificar NoData<br/>en raster final"] --> GUARDAR
+    GUARDAR["Guardar GeoTIFF final<br/>multibanda (6 bandas)"] --> SIG
+    SIG{"¿Más imágenes?"} -->|"Sí"| LOOP_IMG
+    SIG -->|"No"| RESUMEN
+
+    RESUMEN["Mostrar resumen:<br/>N imágenes, directorio,<br/>estadísticas NoData"] --> END_NODE
+    END_NODE([FIN: GeoTIFFs multibanda<br/>Sentinel-2 descargados])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+    style ERR_EXIT  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style INIT      fill:#048A81,color:#fff
+    style REGION    fill:#048A81,color:#fff
+    style TILES     fill:#048A81,color:#fff
+    style BUSCAR    fill:#048A81,color:#fff
+    style LISTA_SR  fill:#048A81,color:#fff
+    style LISTA_L1C fill:#048A81,color:#fff
+    style DESC      fill:#048A81,color:#fff
+    style GUARDAR_TILE fill:#048A81,color:#fff
+    style MERGE     fill:#048A81,color:#fff
+    style LIMPIAR   fill:#048A81,color:#fff
+    style VERIFICAR fill:#048A81,color:#fff
+    style GUARDAR   fill:#048A81,color:#fff
+    style RESUMEN   fill:#4CAF50,color:#fff
+
+    style LOOP_IMG  fill:#54478C,color:#fff
+    style LOOP_TILE fill:#54478C,color:#fff
+
+    style D1        fill:#F4A261,color:#000
+    style D2        fill:#F4A261,color:#000
+    style D_TILE    fill:#F4A261,color:#000
+    style D_MERGE   fill:#F4A261,color:#000
+    style SIG       fill:#F4A261,color:#000
+
+    style ERR       fill:#E63946,color:#fff
+    style ERR_MERGE fill:#E63946,color:#fff
+    style OMIT_TILE fill:#607D8B,color:#fff

@@ -1,0 +1,68 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar:<br/>rutas raster fondo, capas vectoriales,<br/>CRS salida (EPSG:9377),<br/>buffer, tamaño figura,<br/>capas activas"] --> DIAGNOSTICO
+
+    DIAGNOSTICO["Ejecutar diagnóstico CRS:<br/>verificar CRS de todos los<br/>rasters y vectoriales"] --> VALIDAR
+    VALIDAR{"¿Capa de referencia<br/>encontrada?"} -->|"Sí"| REF
+    VALIDAR -->|"No"| ERR
+    ERR["ERROR: falta capa<br/>de referencia"] --> ERR_EXIT
+    ERR_EXIT([FIN — error])
+
+    REF["Leer shapefile de referencia<br/>y reproyectar a EPSG:9377"] --> EXTENT
+    EXTENT["Calcular bbox con buffer<br/>+ ajustar a ratio figura"] --> CAPAS
+
+    CAPAS["Para cada capa vectorial activa:<br/>leer, reproyectar, filtrar por bbox"] --> RASTER
+
+    RASTER["Si imagen satelital activa:<br/>leer, reproyectar a grid exacto,<br/>percent-clip, gamma, brillo"] --> DEM
+    DEM["Si DEM activo:<br/>recortar, reproyectar,<br/>hillshade opcional"] --> FIGURA
+
+    FIGURA["Crear figura matplotlib"] --> DIBUJAR
+
+    subgraph DIBUJAR ["Dibujar elementos cartográficos"]
+      D1["Fondo: imagen satelital<br/>o DEM hillshade o gris"] --> D2
+      D2["Capas vectoriales:<br/>polígonos, líneas, puntos<br/>con halo opcional"] --> D3
+      D3["Etiqueta central<br/>(nombre del área)"] --> D4
+      D4["Flecha de norte"] --> D5
+      D5["Escala gráfica<br/>(coherente con grilla)"] --> D6
+      D6["Grilla Norte/Este<br/>EPSG:9377 con etiquetas"] --> D7
+      D7["Recuadro CRS + escala<br/>en esquina inferior"] --> D8
+      D8["Leyenda de capas visibles"] --> D9
+      D9["Regleta de elevación<br/>(si DEM activo)"] --> FIN_DIBUJAR
+      FIN_DIBUJAR["Mapa dibujado"]
+    end
+
+    DIBUJAR --> GUARDAR
+    GUARDAR["Guardar PNG a DPI configurado<br/>con fondo blanco"] --> RESUMEN
+    RESUMEN["Mostrar resumen:<br/>ruta de salida, estado"] --> END_NODE
+
+    END_NODE([FIN: mapa compuesto<br/>cartográfico generado])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+    style ERR_EXIT  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style DIAGNOSTICO fill:#048A81,color:#fff
+    style REF       fill:#048A81,color:#fff
+    style EXTENT    fill:#048A81,color:#fff
+    style CAPAS     fill:#048A81,color:#fff
+    style RASTER    fill:#048A81,color:#fff
+    style DEM       fill:#048A81,color:#fff
+    style FIGURA    fill:#048A81,color:#fff
+    style D1        fill:#048A81,color:#fff
+    style D2        fill:#048A81,color:#fff
+    style D3        fill:#048A81,color:#fff
+    style D4        fill:#048A81,color:#fff
+    style D5        fill:#048A81,color:#fff
+    style D6        fill:#048A81,color:#fff
+    style D7        fill:#048A81,color:#fff
+    style D8        fill:#048A81,color:#fff
+    style D9        fill:#048A81,color:#fff
+    style GUARDAR   fill:#048A81,color:#fff
+    style RESUMEN   fill:#4CAF50,color:#fff
+
+    style VALIDAR   fill:#F4A261,color:#000
+
+    style ERR       fill:#E63946,color:#fff
+    style FIN_DIBUJAR fill:#4CAF50,color:#fff

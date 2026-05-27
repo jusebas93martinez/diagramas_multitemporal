@@ -1,0 +1,199 @@
+# Diagrama general — Pipeline multitemporal completo
+
+Este diagrama resume **todo el flujo de trabajo** desde la descarga de
+precipitación satelital hasta la generación de mapas compuestos para informe,
+pasando por análisis estadístico, descarga de imágenes ópticas y SAR,
+clasificación de coberturas, análisis geomorfológico y delimitación del cauce
+permanente.
+
+Cada caja corresponde a uno de los 15 scripts documentados en este repositorio.
+
+---
+
+## Diagrama de flujo general
+
+> 📝 **Fuente editable:** [`general_pipeline_completo.mmd`](./general_pipeline_completo.mmd)
+
+```mermaid
+flowchart TD
+    START([INICIO]) --> TRMM
+
+    subgraph TRMM ["00 — Precipitación TRMM/GPM"]
+      T1["Descargar precipitación<br/>mensual desde GEE"] --> T2
+      T2["TRMM ≤ 2014, GPM > 2014<br/>área Colombia"] --> T3
+      T3["GeoTIFF por año/mes"] --> FIN_TRMM
+      FIN_TRMM["Precipitación lista"]
+    end
+
+    TRMM --> IDEAM
+
+    subgraph IDEAM ["01 — Análisis estaciones IDEAM"]
+      I1["Gráfica estación IDEAM<br/>(4 PNG + TXT)"] --> I2
+      I2["Análisis limnimétrico<br/>(6 PNG + 2 TXT)"] --> FIN_IDEAM
+      FIN_IDEAM["Estadísticas IDEAM listas"]
+    end
+
+    IDEAM --> SAT
+
+    subgraph SAT ["02 — Precipitación satelital vs IDEAM"]
+      S1["Extraer serie TRMM/GPM<br/>en punto IDEAM"] --> S2
+      S2["Comparar, cruzar, filtro<br/>La Niña, normativa 2018"] --> S3
+      S3["12 salidas gráficas"] --> FIN_SAT
+      FIN_SAT["Análisis satelital listo"]
+    end
+
+    SAT --> IMG
+
+    subgraph IMG ["03 — Descarga imágenes ópticas"]
+      IM1["Mosaicos S2 + Landsat 1-9<br/>con relleno de nubes"] --> IM2
+      IM2["Tiling dinámico + logs"] --> FIN_IMG
+      FIN_IMG["Imágenes ópticas listas"]
+    end
+
+    IMG --> MEJORES
+
+    subgraph MEJORES ["04 — Selección mejores imágenes"]
+      M1{"Modo manual<br/>(mejores.txt)?"} -->|"Sí"| M2
+      M1 -->|"No"| M3
+      M2["Copiar productos listados"] --> M4
+      M3["Análisis automático de píxeles<br/>+ relleno local + GEE fallback"] --> M4
+      M4["Mosaico MNDWI multitemporal<br/>+ binario final suavizado"] --> FIN_MEJORES
+      FIN_MEJORES["Mejores imágenes + MNDWI listos"]
+    end
+
+    MEJORES --> SAR
+
+    subgraph SAR ["05 — Descarga SAR"]
+      SA1["Composite median S1<br/>(VV+VH) en rango de fechas"] --> SA2
+      SA2["Clasificación binaria<br/>de agua (VV < -14 dB)"] --> FIN_SAR
+      FIN_SAR["SAR + binario agua listo"]
+    end
+
+    SAR --> UNION
+
+    subgraph UNION ["06 — Unión MNDWI + SAR"]
+      U1["OR lógico binario<br/>SAR + MNDWI"] --> U2
+      U2["Extracción masas grandes<br/>+ vectorización + suavizado"] --> FIN_UNION
+      FIN_UNION["Shapefile agua unida listo"]
+    end
+
+    UNION --> MASAGUA
+
+    subgraph MASAGUA ["07 — Extraer más agua"]
+      MA1["Extracción masas grandes<br/>desde raster binario"] --> MA2
+      MA2["Vectorización y suavizado<br/>independiente"] --> FIN_MASAGUA
+      FIN_MASAGUA["Shapefile masas agua listo"]
+    end
+
+    MASAGUA --> GEO
+
+    subgraph GEO ["08 — Análisis geomorfológico"]
+      G1["Descarga DEM (local o GEE)"] --> G2
+      G2["Microrelieve exagerado"] --> G3
+      G3["HAND + TWI + clasificación<br/>9 clases de inundabilidad"] --> G4
+      G4["Mapas cartográficos 2×2<br/>+ tipo de relieve GDB"] --> FIN_GEO
+      FIN_GEO["Geomorfología lista"]
+    end
+
+    GEO --> MULTI
+
+    subgraph MULTI ["09 — Descarga multibanda S2"]
+      MU1["Descargar S2 multibanda<br/>6 bandas por fecha"] --> FIN_MULTI
+      FIN_MULTI["Multibanda S2 lista"]
+    end
+
+    MULTI --> COBERTURAS
+
+    subgraph COBERTURAS ["10 — Clasificación coberturas"]
+      C1["Calcular índices<br/>(NDVI, MNDWI, NDBI)"] --> C2
+      C2["Clasificar con RF<br/>(5 clases CLC)"] --> C3
+      C3["Extraer ciénagas<br/>(agua + veg. húmeda)"] --> FIN_COBERTURAS
+      FIN_COBERTURAS["Coberturas + ciénagas listas"]
+    end
+
+    COBERTURAS --> MODELO
+
+    subgraph MODELO ["12 — Entrenar modelo RF"]
+      MO1["Crear muestras en QGIS<br/>(polígonos por clase)"] --> MO2
+      MO2["Entrenar Random Forest<br/>con CV y GridSearch"] --> MO3
+      MO3["Guardar modelo .pkl"] --> FIN_MODELO
+      FIN_MODELO["Modelo entrenado"]
+    end
+
+    MODELO --> COMP
+
+    subgraph COMP ["11 — Unir componentes"]
+      CO1["Cargar eco + geo + hidro"] --> CO2
+      CO2["Aplicar reglas de negocio<br/>(agua prioritaria, geo límite)"] --> CO3
+      CO3["Suavizar y guardar<br/>cauce permanente"] --> FIN_COMP
+      FIN_COMP["Cauce permanente listo"]
+    end
+
+    COMP --> GRAF
+
+    subgraph GRAF ["13 + 14 — Salidas gráficas"]
+      GR1["Mosaicos IR y MNDWI"] --> GR2
+      GR2["Mapa frecuencia agua<br/>+ mapa SAR"] --> GR3
+      GR3["Mapa compuesto cartográfico<br/>(S2 + capas + grilla 9377)"] --> FIN_GRAF
+      FIN_GRAF["Salidas gráficas listas"]
+    end
+
+    GRAF --> END_NODE
+    END_NODE([FIN: informe completo<br/>con todos los insumos])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+
+    style FIN_TRMM      fill:#4CAF50,color:#fff
+    style FIN_IDEAM     fill:#4CAF50,color:#fff
+    style FIN_SAT       fill:#4CAF50,color:#fff
+    style FIN_IMG       fill:#4CAF50,color:#fff
+    style FIN_MEJORES   fill:#4CAF50,color:#fff
+    style FIN_SAR       fill:#4CAF50,color:#fff
+    style FIN_UNION     fill:#4CAF50,color:#fff
+    style FIN_MASAGUA   fill:#4CAF50,color:#fff
+    style FIN_GEO       fill:#4CAF50,color:#fff
+    style FIN_MULTI     fill:#4CAF50,color:#fff
+    style FIN_COBERTURAS fill:#4CAF50,color:#fff
+    style FIN_MODELO    fill:#4CAF50,color:#fff
+    style FIN_COMP      fill:#4CAF50,color:#fff
+    style FIN_GRAF      fill:#4CAF50,color:#fff
+
+    style M1            fill:#F4A261,color:#000
+```
+
+---
+
+## Secuencia recomendada de ejecución
+
+| Orden | Script | Entrada principal | Salida principal |
+|---|---|---|---|
+| 1 | 00 | GEE | GeoTIFFs precipitación |
+| 2 | 01 | Datos IDEAM | PNG + TXT estadísticos |
+| 3 | 02 | GeoTIFFs + IDEAM | 12 gráficas comparativas |
+| 4 | 03 | GEE | Mosaicos ópticos + logs |
+| 5 | 04 | Productos 03 | Mejores imágenes + MNDWI |
+| 6 | 05 | GEE | SAR composite + binario |
+| 7 | 06 | 04 + 05 | Shapefile agua SAR+MNDWI |
+| 8 | 07 | Cualquier binario | Shapefile masas agua |
+| 9 | 08 | AOI + DEM opcional | HAND/TWI + mapas |
+| 10 | 09 | GEE | GeoTIFF multibanda S2 |
+| 11 | 12 | Imagen + muestras QGIS | Modelo RF .pkl |
+| 12 | 10 | 09 + modelo 12 | Coberturas + ciénagas |
+| 13 | 11 | 10 + 08 + hidro | Cauce permanente |
+| 14 | 13 | 04 + 05 | Mosaicos IR/MNDWI/SAR |
+| 15 | 14 | 09 + 11 + capas | Mapa compuesto final |
+
+---
+
+## Edición visual del diagrama
+
+1. **[mermaid.live](https://mermaid.live)** — copiar/pegar el `.mmd`.
+2. **[Mermaid Chart](https://www.mermaidchart.com)** — drag & drop.
+3. **VS Code** + extensión `tomoyukim.vscode-mermaid-editor`.
+
+Tras editar, sincroniza con:
+
+```bash
+python scripts/sync_mmd.py diagramas/general_pipeline_completo.mmd
+```

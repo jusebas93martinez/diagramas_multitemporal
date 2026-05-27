@@ -1,0 +1,132 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar rutas base,<br/>shapefiles AOI e hidrológico,<br/>proyecto GEE,<br/>parámetros gráficos"] --> DEM
+
+    subgraph DEM ["Paso 1: Fuente del DEM"]
+      D1{"¿Existe DEM local<br/>de alta resolución?"} -->|"Sí"| D2
+      D1 -->|"No"| D3
+      D2["Usar DEM local<br/>(omitir descarga GEE)"] --> FIN_DEM
+      D3["Inicializar GEE"] --> D4
+      D4["Cargar shapefile AOI<br/>y crear región con buffer"] --> D5
+      D5["Descargar 4 DEMs desde GEE:<br/>• Copernicus GLO-30<br/>• NASADEM<br/>• ALOS AW3D30<br/>• SRTM GL1"] --> D6
+      D6["Seleccionar DEM para análisis<br/>(por defecto Copernicus)"] --> FIN_DEM
+      FIN_DEM["DEM listo"]
+    end
+
+    DEM --> MICRO
+
+    subgraph MICRO ["Paso 2: Microrelieve exagerado"]
+      M1["Leer DEM crudo"] --> M2
+      M2["Limpiar anomalías:<br/>nodata, ceros, negativos,<br/>outliers (>3σ)"] --> M3
+      M3["Rellenar huecos<br/>(rasterio.fillnodata)"] --> M4
+      M4["Suavizado gaussiano<br/>(sigma=7 px)"] --> M5
+      M5["Calcular microrelieve:<br/>DEM - suavizado"] --> M6
+      M6["Exagerar ×10 y sumar<br/>al suavizado"] --> M7
+      M7["Clampear negativos a 0"] --> M8
+      M8["Guardar DEM microrelieve"] --> FIN_MICRO
+      FIN_MICRO["Microrelieve listo"]
+    end
+
+    MICRO --> HAND_TWI
+
+    subgraph HAND_TWI ["Paso 3: HAND + TWI — Zonas de inundación"]
+      H1["Rellenar depresiones<br/>(WhiteboxTools)"] --> H2
+      H2["Dirección de flujo D8"] --> H3
+      H3["Acumulación de flujo D8"] --> H4
+      H4["Extraer red de drenaje<br/>(umbral acumulación)"] --> H5
+      H5["Calcular pendiente (grados)"] --> H6
+      H6["Calcular HAND<br/>(altura sobre drenaje)"] --> H7
+      H7["Calcular TWI<br/>(índice de humedad)"] --> H8
+      H8["Normalizar HAND y TWI<br/>y combinar con pesos"] --> H9
+      H9["Aplicar máscara de pendiente<br/>máxima inundable"] --> H10
+      H10["Clasificar en 9 clases<br/>de inundabilidad"] --> H11
+      H11{"¿Suavizar resultado?"} -->|"Sí"| H12
+      H11 -->|"No"| H13
+      H12["Suavizado morfológico<br/>(closing + opening)"] --> H13
+      H13["Guardar clasificación + índice continuo"] --> H14
+      H14["Generar leyenda QGIS (.qml)"] --> FIN_HAND
+      FIN_HAND["HAND/TWI listo"]
+    end
+
+    HAND_TWI --> GRAFICOS
+
+    subgraph GRAFICOS ["Paso 4: Generación de gráficos cartográficos"]
+      G1["Cargar capa de referencia<br/>hidrológica"] --> G2
+      G2["Calcular extent de zoom<br/>con buffer alrededor del hidrológico"] --> G3
+      G3["Para cada raster config:<br/>slope, flow accumulation,<br/>streams, HAND, zonas"] --> G4
+      G4["Generar mapa individual<br/>con hillshade, grilla MAGNA-SIRGAS,<br/>flecha norte, barra escala,<br/>límite hidrológico"] --> G5
+      G5{"¿Más rasters?"} -->|"Sí"| G4
+      G5 -->|"No"| G6
+      G6["Generar mapa compuesto 2×2"] --> FIN_GRAF
+      FIN_GRAF["Gráficos listos"]
+    end
+
+    GRAFICOS --> RELIEVE
+
+    subgraph RELIEVE ["Paso 4B: Mapa tipo de relieve (GDB)"]
+      R1{"¿Existe GDB de relieve?"} -->|"Sí"| R2
+      R1 -->|"No"| FIN_RELIEVE
+      R2["Leer capa de tipos de relieve"] --> R3
+      R3["Reproyectar al CRS del DEM"] --> R4
+      R4["Asignar paleta por tipo"] --> R5
+      R5["Dibujar sobre DEM hillshade<br/>con transparencia"] --> R6
+      R6["Resaltar unidades inundables<br/>en azul/cian"] --> R7
+      R7["Guardar mapa tipo de relieve"] --> FIN_RELIEVE
+      FIN_RELIEVE["Relieve opcional listo"]
+    end
+
+    RELIEVE --> END_NODE
+    END_NODE([FIN: DEM, HAND/TWI,<br/>mapas cartográficos y QML generados])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style D2        fill:#048A81,color:#fff
+    style D3        fill:#048A81,color:#fff
+    style D4        fill:#048A81,color:#fff
+    style D5        fill:#048A81,color:#fff
+    style D6        fill:#048A81,color:#fff
+    style M1        fill:#048A81,color:#fff
+    style M2        fill:#048A81,color:#fff
+    style M3        fill:#048A81,color:#fff
+    style M4        fill:#048A81,color:#fff
+    style M5        fill:#048A81,color:#fff
+    style M6        fill:#048A81,color:#fff
+    style M7        fill:#048A81,color:#fff
+    style M8        fill:#048A81,color:#fff
+    style H1        fill:#048A81,color:#fff
+    style H2        fill:#048A81,color:#fff
+    style H3        fill:#048A81,color:#fff
+    style H4        fill:#048A81,color:#fff
+    style H5        fill:#048A81,color:#fff
+    style H6        fill:#048A81,color:#fff
+    style H7        fill:#048A81,color:#fff
+    style H8        fill:#048A81,color:#fff
+    style H9        fill:#048A81,color:#fff
+    style H10       fill:#048A81,color:#fff
+    style H12       fill:#048A81,color:#fff
+    style H13       fill:#048A81,color:#fff
+    style H14       fill:#048A81,color:#fff
+    style G1        fill:#048A81,color:#fff
+    style G2        fill:#048A81,color:#fff
+    style G4        fill:#048A81,color:#fff
+    style G6        fill:#048A81,color:#fff
+    style R2        fill:#048A81,color:#fff
+    style R3        fill:#048A81,color:#fff
+    style R4        fill:#048A81,color:#fff
+    style R5        fill:#048A81,color:#fff
+    style R6        fill:#048A81,color:#fff
+    style R7        fill:#048A81,color:#fff
+
+    style D1        fill:#F4A261,color:#000
+    style H11       fill:#F4A261,color:#000
+    style R1        fill:#F4A261,color:#000
+    style G5        fill:#F4A261,color:#000
+
+    style FIN_DEM   fill:#4CAF50,color:#fff
+    style FIN_MICRO fill:#4CAF50,color:#fff
+    style FIN_HAND  fill:#4CAF50,color:#fff
+    style FIN_GRAF  fill:#4CAF50,color:#fff
+    style FIN_RELIEVE fill:#4CAF50,color:#fff

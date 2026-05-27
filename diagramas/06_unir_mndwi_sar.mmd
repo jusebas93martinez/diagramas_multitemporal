@@ -1,0 +1,83 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar rutas:<br/>SAR composite, MNDWI suavizado,<br/>carpeta de salida"] --> CARGAR
+
+    CARGAR["Cargar rasters binarios<br/>SAR y MNDWI"] --> GEO
+    GEO{"¿Misma geometría<br/>(CRS, shape, bounds)?"} -->|"No"| REPROJ
+    GEO -->|"Sí"| UNION
+    REPROJ["Reproyectar MNDWI a la<br/>geometría de SAR (nearest)"] --> UNION
+
+    UNION["Unión binaria:<br/>SAR OR MNDWI (pixel = agua si<br/>cualquiera marca agua)"] --> STATS1
+    STATS1["Calcular estadísticas:<br/>pixeles SAR, MNDWI y unión"] --> GUARDAR_UNION
+    GUARDAR_UNION["Guardar TIF unión<br/>(uint8, nodata=0)"] --> EXTRACCION
+
+    subgraph EXTRACCION ["Paso 2: Extracción de masas grandes"]
+      E1["Crear copia del agua unida"] --> E2
+      E2["Aplicar erosión morfológica<br/>(separa componentes conectados)"] --> E3
+      E3["Etiquetar componentes conectados<br/>(scipy.ndimage.label)"] --> E4
+      E4["Calcular tamaño de cada componente"] --> E5
+      E5{"¿Componente ≥ área mínima<br/>(pixeles)?"} -->|"Sí"| E6
+      E5 -->|"No"| DESCARTAR
+      DESCARTAR["Descartar componente pequeño"] --> E5
+      E6["Guardar IDs de componentes grandes"] --> E7
+      E7["Restaurar tamaño original:<br/>dilatación morfológica"] --> E8
+      E8["Enmascarar con agua original<br/>(no expandir fuera del agua real)"] --> E9
+      E9["Guardar TIF intermedio<br/>masas grandes (opcional)"] --> FINEXT
+      FINEXT["Fin extracción"]
+    end
+
+    EXTRACCION --> VECTORIZACION
+
+    subgraph VECTORIZACION ["Paso 3: Vectorización y suavizado"]
+      V1["Vectorizar raster a polígonos<br/>(rasterio.features.shapes)"] --> V2
+      V2["Reproyectar a UTM si el CRS<br/>es geográfico"] --> V3
+      V3["Filtrar polígonos por área<br/>mínima (m2)"] --> V4
+      V4["Simplificación inicial<br/>(preserve_topology)"] --> V5
+      V5["Suavizado iterativo:<br/>buffer+ / buffer- (N iteraciones)"] --> V6
+      V6{"¿Usar suavizado extra?"} -->|"Sí"| V7
+      V6 -->|"No"| V8
+      V7["Suavizado extra:<br/>erosión-dilatación geométrica"] --> V8
+      V8["Simplificación final"] --> V9
+      V9["Calcular área (m2, ha)"] --> V10
+      V10["Guardar shapefile suavizado"] --> FINVEC
+      FINVEC["Fin vectorización"]
+    end
+
+    VECTORIZACION --> RESUMEN
+    RESUMEN["Mostrar resumen final:<br/>pixeles originales, extraídos,<br/>componentes, polígonos, área total"] --> END_NODE
+
+    END_NODE([FIN: shapefile de agua<br/>SAR+MNDWI suavizado])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style CARGAR    fill:#048A81,color:#fff
+    style REPROJ    fill:#048A81,color:#fff
+    style UNION     fill:#048A81,color:#fff
+    style STATS1    fill:#048A81,color:#fff
+    style GUARDAR_UNION fill:#048A81,color:#fff
+    style E2        fill:#048A81,color:#fff
+    style E3        fill:#048A81,color:#fff
+    style E4        fill:#048A81,color:#fff
+    style E6        fill:#048A81,color:#fff
+    style E7        fill:#048A81,color:#fff
+    style E8        fill:#048A81,color:#fff
+    style E9        fill:#048A81,color:#fff
+    style V1        fill:#048A81,color:#fff
+    style V2        fill:#048A81,color:#fff
+    style V3        fill:#048A81,color:#fff
+    style V4        fill:#048A81,color:#fff
+    style V5        fill:#048A81,color:#fff
+    style V7        fill:#048A81,color:#fff
+    style V8        fill:#048A81,color:#fff
+    style V9        fill:#048A81,color:#fff
+    style V10       fill:#048A81,color:#fff
+    style RESUMEN   fill:#4CAF50,color:#fff
+
+    style GEO       fill:#F4A261,color:#000
+    style E5        fill:#F4A261,color:#000
+    style V6        fill:#F4A261,color:#000
+
+    style DESCARTER fill:#607D8B,color:#fff

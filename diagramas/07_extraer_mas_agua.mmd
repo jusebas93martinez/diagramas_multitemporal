@@ -1,0 +1,70 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar rutas:<br/>raster binario de entrada,<br/>carpeta de salida,<br/>parámetros de extracción"] --> CARGAR
+    CARGAR["Cargar raster binario<br/>de agua (agua=1, no-agua=0)"] --> EXTRACCION
+
+    subgraph EXTRACCION ["Paso 1: Extracción de masas de agua grandes"]
+      E1["Convertir a máscara binaria<br/>y contar pixeles iniciales"] --> E2
+      E2["Aplicar erosión morfológica<br/>(scipy.ndimage.binary_erosion)"] --> E3
+      E3["Etiquetar componentes conectados"] --> E4
+      E4["Calcular tamaño de cada componente"] --> E5
+      E5{"¿Componente ≥<br/>AREA_MINIMA_PIXELES?"} -->|"Sí"| E6
+      E5 -->|"No"| DESCARTAR
+      DESCARTAR["Descartar componente"] --> E5
+      E6["Construir máscara de<br/>componentes grandes"] --> E7
+      E7["Restaurar tamaño original:<br/>dilatación morfológica"] --> E8
+      E8["Enmascarar con agua original<br/>(evita expansión artificial)"] --> E9
+      E9["Guardar TIF intermedio<br/>masas grandes (opcional)"] --> FINEXT
+      FINEXT["Fin extracción"]
+    end
+
+    EXTRACCION --> VECTORIZACION
+
+    subgraph VECTORIZACION ["Paso 2: Vectorización y suavizado"]
+      V1["Vectorizar raster a polígonos<br/>(rasterio.features.shapes)"] --> V2
+      V2["Reproyectar a UTM si el CRS<br/>es geográfico"] --> V3
+      V3["Filtrar polígonos por área<br/>mínima (m2)"] --> V4
+      V4["Simplificación inicial"] --> V5
+      V5["Suavizado iterativo:<br/>buffer+ / buffer-"] --> V6
+      V6{"¿Usar suavizado extra?"} -->|"Sí"| V7
+      V6 -->|"No"| V8
+      V7["Suavizado extra:<br/>erosión-dilatación geométrica"] --> V8
+      V8["Simplificación final"] --> V9
+      V9["Calcular área (m2, ha)"] --> V10
+      V10["Guardar shapefile suavizado"] --> FINVEC
+      FINVEC["Fin vectorización"]
+    end
+
+    VECTORIZACION --> RESUMEN
+    RESUMEN["Mostrar resumen:<br/>pixeles, componentes,<br/>polígonos finales, área total"] --> END_NODE
+
+    END_NODE([FIN: shapefile de masas<br/>de agua suavizado])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style CARGAR    fill:#048A81,color:#fff
+    style E2        fill:#048A81,color:#fff
+    style E3        fill:#048A81,color:#fff
+    style E4        fill:#048A81,color:#fff
+    style E6        fill:#048A81,color:#fff
+    style E7        fill:#048A81,color:#fff
+    style E8        fill:#048A81,color:#fff
+    style E9        fill:#048A81,color:#fff
+    style V1        fill:#048A81,color:#fff
+    style V2        fill:#048A81,color:#fff
+    style V3        fill:#048A81,color:#fff
+    style V4        fill:#048A81,color:#fff
+    style V5        fill:#048A81,color:#fff
+    style V7        fill:#048A81,color:#fff
+    style V8        fill:#048A81,color:#fff
+    style V9        fill:#048A81,color:#fff
+    style V10       fill:#048A81,color:#fff
+    style RESUMEN   fill:#4CAF50,color:#fff
+
+    style E5        fill:#F4A261,color:#000
+    style V6        fill:#F4A261,color:#000
+
+    style DESCARTAR fill:#607D8B,color:#fff

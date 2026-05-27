@@ -1,0 +1,51 @@
+flowchart TD
+    START([INICIO]) --> CFG
+
+    CFG["Configurar:<br/>pares (imagen, shapefile_muestras),<br/>directorio de salida,<br/>campo de clase, CRS forzado"] --> PREVIO
+
+    PREVIO["PASO PREVIO (manual en QGIS):<br/>Crear shapefile de polígonos<br/>con campo 'Clase' (1-5)<br/>mínimo 150 px por clase"] --> FUENTES
+
+    FUENTES["/Para cada fuente<br/>de entrenamiento/"] --> CARGAR_IMG
+    CARGAR_IMG["Paso 1: Cargar imagen S2<br/>y calcular índices<br/>(6 → 9 bandas)"] --> EXTRAER
+    EXTRAER["Paso 2: Rasterizar polígonos<br/>y extraer píxeles válidos<br/>por clase"] --> FUENTES
+    FUENTES --> COMBINAR
+    COMBINAR["Combinar todas las muestras<br/>en X (n, 9) e y (n,)"] --> ENTRENAR
+
+    subgraph ENTRENAR ["Paso 3: Entrenar modelo Random Forest"]
+      E1["Dividir train/test<br/>(75/25 estratificado)"] --> E2
+      E2["GridSearchCV sobre:<br/>n_estimators, max_depth,<br/>max_features, min_samples_leaf"] --> E3
+      E3["Validación cruzada<br/>StratifiedKFold (5 folds)"] --> E4
+      E4["Evaluar en test set:<br/>accuracy, balanced accuracy,<br/>OOB score"] --> E5
+      E5["Generar matriz de confusión<br/>e importancia de variables"] --> E6
+      E6["Reentrenar con 100%<br/>de los datos"] --> FIN_ENTRENAR
+      FIN_ENTRENAR["Modelo entrenado"]
+    end
+
+    ENTRENAR --> GUARDAR
+    GUARDAR["Paso 4: Guardar modelo<br/>Best_RandomForest_Model.pkl"] --> META
+    META["Guardar metadatos CSV<br/>(parámetros, clases, bandas,<br/>scores)"] --> RESUMEN
+    RESUMEN["Mostrar resumen:<br/>clases, scores, consejos<br/>de mejora"] --> END_NODE
+
+    END_NODE([FIN: modelo .pkl listo<br/>para 10. COBERTURAS.py])
+
+    style START     fill:#2E4057,color:#fff
+    style END_NODE  fill:#2E4057,color:#fff
+
+    style CFG       fill:#048A81,color:#fff
+    style PREVIO    fill:#F4A261,color:#000
+    style CARGAR_IMG fill:#048A81,color:#fff
+    style EXTRAER   fill:#048A81,color:#fff
+    style COMBINAR  fill:#048A81,color:#fff
+    style E1        fill:#048A81,color:#fff
+    style E2        fill:#048A81,color:#fff
+    style E3        fill:#048A81,color:#fff
+    style E4        fill:#048A81,color:#fff
+    style E5        fill:#048A81,color:#fff
+    style E6        fill:#048A81,color:#fff
+    style GUARDAR   fill:#048A81,color:#fff
+    style META      fill:#048A81,color:#fff
+    style RESUMEN   fill:#4CAF50,color:#fff
+
+    style FUENTES   fill:#54478C,color:#fff
+
+    style FIN_ENTRENAR fill:#4CAF50,color:#fff
