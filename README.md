@@ -22,7 +22,7 @@ editable en [mermaid.live](https://mermaid.live) o
 |---|---|---|---|---|
 | 00 | [`00._Descarga_Raster_TRMM.py`](./Codigos/00._Descarga_Raster_TRMM.py) | Descarga precipitación mensual TRMM/GPM desde GEE | ✅ [ver](./diagramas/00_descarga_raster_trmm_gpm.md) | ✅ [abrir](./diagramas/00_descarga_raster_trmm_gpm.mmd) |
 | 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Análisis estadístico de serie IDEAM (4 PNG + informe TXT) | ✅ [ver](./diagramas/01_grafica_ideam.md) | ✅ [abrir](./diagramas/01_grafica_ideam.mmd) |
-| 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Gráficas IDEAM (variante lineal/métrica) | ⏳ | ⏳ |
+| 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Análisis de estación limnimétrica IDEAM (6 PNG + 2 TXT) | ✅ [ver](./diagramas/01b_grafica_ideam_linumetrica.md) | ✅ [abrir](./diagramas/01b_grafica_ideam_linumetrica.mmd) |
 | 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | Gráficas de precipitación satelital | ⏳ | ⏳ |
 | 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ | ⏳ |
 | 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección de mejores imágenes por nubosidad | ⏳ | ⏳ |
