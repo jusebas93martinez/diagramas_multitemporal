@@ -11,6 +11,17 @@ Cada diagrama documenta **un script Python** ubicado en
 
 ---
 
+## Ver los diagramas como galería visual
+
+**👉 https://jusebas93martinez.github.io/diagramas_multitemporal/** — index.html
+con las miniaturas de los 17 diagramas exportados en PNG, enlaces rápidos a
+cada `.md`, `.mmd` y script Python correspondiente.
+
+> Si la página no está disponible aún, espera ~2 minutos a que GitHub Actions
+> termine el primer despliegue.
+
+---
+
 ## Índice de diagramas
 
 Cada entrada documentada incluye **dos archivos** en `diagramas/`:
