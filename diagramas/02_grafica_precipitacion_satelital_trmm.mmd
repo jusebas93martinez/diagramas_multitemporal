@@ -1,0 +1,123 @@
+flowchart TD
+    S1([INICIO]) --> S2
+
+    subgraph F1 ["Fase 1: Extracción desde rasters y estadísticas TRMM/GPM"]
+      direction TB
+      S2["Configurar sitio, coordenadas (LAT, LON),<br/>tipo de estación IDEAM, año inicio comparación<br/>y rutas (carpeta rasters, salidas, IDEAM TXT/CSV)"]
+      S3["Crear la carpeta de salida si no existe"]
+      S4["Listar los archivos .tif de la carpeta de rasters"]
+      D1{"¿Hay archivos<br/>.tif disponibles ?"}
+      FAIL1["Reportar carpeta vacía<br/>y terminar el script"]
+      L1[/"Para cada archivo .tif"/]
+      S5["Extraer año y mes del nombre del archivo<br/>(patrón YYYY_MM con expresión regular)"]
+      S6["Abrir el raster con rasterio y leer<br/>el píxel correspondiente a (LAT, LON)"]
+      S7["Limpiar el dataset:<br/>descartar valores NoData, ≤ 0 y año 2025"]
+      D2{"¿Quedan datos<br/>válidos ?"}
+      FAIL2["Reportar dataset vacío<br/>y terminar"]
+      S8["Guardar el CSV con la serie extraída<br/>(AÑO, MES, VALOR)"]
+      S9["Calcular estadísticas:<br/>tendencia lineal, estadísticas mensuales,<br/>anuales, decadales y anomalías"]
+
+      S2 --> S3 --> S4 --> D1
+      D1 -->|"No"| FAIL1
+      D1 -->|"Sí"| L1 --> S5 --> S6
+      S6 -.->|"siguiente archivo"| L1
+      S6 --> S7 --> D2
+      D2 -->|"No"| FAIL2
+      D2 -->|"Sí"| S8 --> S9
+    end
+
+    S9 --> O1
+
+    subgraph F2 ["Fase 2: Salidas basadas solo en TRMM"]
+      direction TB
+      O1["Generar gráfica de serie temporal (PNG)<br/>barras + media móvil + tendencia + anomalías"]
+      O2["Generar tabla intranual (PNG)<br/>matriz coloreada por percentiles del año"]
+      O3["Generar tabla interanual (PNG)<br/>matriz coloreada por percentiles del mes"]
+      O4["Generar gráfica de promedio anual (PNG)<br/>con sombreado de años La Niña"]
+      O5["Generar gráfica de régimen mensual (PNG)"]
+      O6["Generar heatmap año × mes (PNG)"]
+      S10["Análisis multitemporal con FILTRO NO-NIÑA:<br/>seleccionar los 6 años con mayor suma de<br/>meses sobre P75 fuera de períodos La Niña"]
+      O7["Generar gráfica de meses húmedos seleccionados (PNG)<br/>top 15 meses, sin influencia La Niña"]
+      O8["Generar reporte completo (TXT)<br/>10 secciones: estadísticas, extremos,<br/>multitemporal y recomendaciones"]
+      O9["Generar régimen pluviométrico (XLSX)<br/>tabla con formato y estilos (openpyxl)"]
+
+      O1 --> O2 --> O3 --> O4 --> O5 --> O6 --> S10 --> O7 --> O8 --> O9
+    end
+
+    O9 --> S11
+
+    subgraph F3 ["Fase 3: Análisis combinado TRMM + estación IDEAM"]
+      direction TB
+      S11["Parsear el TXT de análisis IDEAM previo<br/>(meses húmedos, top 10, años extremos)"]
+      S12["Cargar el CSV crudo del IDEAM<br/>(AÑO, MES, VALOR desde 1985)"]
+      D3{"¿Tipo de estación IDEAM ?"}
+      S13a["Comparación directa pluviometría:<br/>aplicar reglas R1/R2/R3 sobre sumas anuales<br/>(TRMM mm vs IDEAM mm)"]
+      S13b["Comparación normalizada limnimetría:<br/>calcular z-scores de cada serie y combinarlos<br/>(incluye años pre-TRMM, anteriores a 1998)"]
+      S14["Calcular consenso de meses húmedos:<br/>comunes, solo TRMM y solo IDEAM"]
+      S15["Seleccionar los 10 años con mayor score combinado"]
+      D4{"¿Al menos 1 año<br/>anterior al 2000<br/>en el top 10 ?"}
+      S16a["Reemplazar el peor año del top<br/>por el mejor año pre-2000<br/>(normativa IDEAM 2018)"]
+      D5{"¿Al menos 2 años<br/>entre 2020 y 2026<br/>en el top 10 ?"}
+      S16b["Reemplazar los peores años del top<br/>por los mejores recientes 2020-2026"]
+      O10["Generar TXT de análisis combinado<br/>(consenso, scoring, top 10 normado,<br/>temporalidad y conclusiones)"]
+      O11["Generar PNG comparativo TRMM vs IDEAM<br/>(series superpuestas y top 10 destacado)"]
+
+      S11 --> S12 --> D3
+      D3 -->|"Pluviométrica"| S13a
+      D3 -->|"Limnimétrica"| S13b
+      S13a --> S14
+      S13b --> S14
+      S14 --> S15 --> D4
+      D4 -->|"No"| S16a --> D5
+      D4 -->|"Sí"| D5
+      D5 -->|"No"| S16b --> O10
+      D5 -->|"Sí"| O10
+      O10 --> O11
+    end
+
+    O11 --> FIN
+    FIN([FIN: archivos generados])
+
+    style S1   fill:#2E4057,color:#fff
+    style FIN  fill:#2E4057,color:#fff
+
+    style S2   fill:#048A81,color:#fff
+    style S3   fill:#048A81,color:#fff
+    style S4   fill:#048A81,color:#fff
+    style S5   fill:#048A81,color:#fff
+    style S6   fill:#048A81,color:#fff
+    style S7   fill:#048A81,color:#fff
+    style S8   fill:#048A81,color:#fff
+    style S9   fill:#048A81,color:#fff
+    style S10  fill:#048A81,color:#fff
+    style S11  fill:#048A81,color:#fff
+    style S12  fill:#048A81,color:#fff
+    style S13a fill:#048A81,color:#fff
+    style S13b fill:#048A81,color:#fff
+    style S14  fill:#048A81,color:#fff
+    style S15  fill:#048A81,color:#fff
+    style S16a fill:#048A81,color:#fff
+    style S16b fill:#048A81,color:#fff
+
+    style O1   fill:#048A81,color:#fff
+    style O2   fill:#048A81,color:#fff
+    style O3   fill:#048A81,color:#fff
+    style O4   fill:#048A81,color:#fff
+    style O5   fill:#048A81,color:#fff
+    style O6   fill:#048A81,color:#fff
+    style O7   fill:#048A81,color:#fff
+    style O8   fill:#048A81,color:#fff
+    style O9   fill:#048A81,color:#fff
+    style O10  fill:#048A81,color:#fff
+    style O11  fill:#4CAF50,color:#fff
+
+    style L1   fill:#54478C,color:#fff
+
+    style D1   fill:#F4A261,color:#000
+    style D2   fill:#F4A261,color:#000
+    style D3   fill:#F4A261,color:#000
+    style D4   fill:#F4A261,color:#000
+    style D5   fill:#F4A261,color:#000
+
+    style FAIL1 fill:#E63946,color:#fff
+    style FAIL2 fill:#E63946,color:#fff
