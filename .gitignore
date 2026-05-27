@@ -1,0 +1,28 @@
+# Claude Code local config
+.claude/
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editores
+.idea/
+*.swp
+*.swo
+*~
+
+# Python (para scripts/validar_mermaid.py)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node (si se instala mermaid-cli localmente)
+node_modules/
+package-lock.json
+
+# Salidas de validación
+*.png.tmp
+mermaid-output/
