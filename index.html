@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagramas Multitemporal — Índice visual</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --border: #2e3344;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --accent: #048A81;
+      --accent2: #F4A261;
+      --ok: #4CAF50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+      color: var(--accent);
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.15s, border-color 0.15s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+    }
+    .card-general {
+      grid-column: 1 / -1;
+      border-color: var(--accent2);
+    }
+    .card-general:hover {
+      border-color: var(--accent2);
+    }
+    .card-thumb {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #fff;
+      display: block;
+    }
+    .card-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-num {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .card-general .card-num {
+      color: var(--accent2);
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      line-height: 1.3;
+    }
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      flex: 1;
+    }
+    .card-links {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .card-links a {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+    .card-links a:hover { opacity: 0.8; }
+    .link-png {
+      background: var(--accent);
+      color: #fff;
+    }
+    .link-md {
+      background: #2196F3;
+      color: #fff;
+    }
+    .link-mmd {
+      background: #9C27B0;
+      color: #fff;
+    }
+    .link-code {
+      background: var(--border);
+      color: var(--text);
+    }
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Diagramas Multitemporal</h1>
+<p class="subtitle">Pipeline geoespacial TRMM/GPM · Sentinel-1/2 · Clasificaciones · Informes</p>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">17</div><div class="stat-label">diagramas</div></div>
+  <div class="stat"><div class="stat-num">16</div><div class="stat-label">scripts Python</div></div>
+  <div class="stat"><div class="stat-num">17</div><div class="stat-label">PNGs exportados</div></div>
+</div>
+
+<div class="grid">
+
+  <!-- 00 -->
+  <div class="card">
+    <img class="card-thumb" src="export/00_descarga_raster_trmm_gpm.png" alt="00_descarga_raster_trmm_gpm">
+    <div class="card-body">
+      <div class="card-num">00 · GEE</div>
+      <div class="card-title">Descarga Raster TRMM/GPM</div>
+      <div class="card-desc">Precipitación mensual desde Google Earth Engine — TRMM (≤2014) y GPM (>2014), normales climatológicas, exportación GeoTIFF.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/00_descarga_raster_trmm_gpm.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/00_descarga_raster_trmm_gpm.md">.md</a>
+        <a class="link-mmd" href="diagramas/00_descarga_raster_trmm_gpm.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/00._Descarga_Raster_TRMM.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="card">
+    <img class="card-thumb" src="export/01_grafica_ideam.png" alt="01_grafica_ideam">
+    <div class="card-body">
+      <div class="card-num">01 · IDEAM</div>
+      <div class="card-title">Gráfica IDEAM</div>
+      <div class="card-desc">Análisis estadístico de serie de precipitación IDEAM: 4 PNG (mensual, anual, barras, mensual multianual) + informe TXT.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/01_grafica_ideam.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/01_grafica_ideam.md">.md</a>
+        <a class="link-mmd" href="diagramas/01_grafica_ideam.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/01_Grafica_ideam.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 01b -->
+  <div class="card">
+    <img class="card-thumb" src="export/01b_grafica_ideam_linumetrica.png" alt="01b_grafica_ideam_linumetrica">
+    <div class="card-body">
+      <div class="card-num">01b · Limnimétrica</div>
+      <div class="card-title">Gráfica IDEAM Limnimétrica</div>
+      <div class="card-desc">Análisis de estación limnimétrica: hidrograma mensual, curva de duración, clasificación de años (5 categorías), 6 PNG + 2 TXT.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/01b_grafica_ideam_linumetrica.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/01b_grafica_ideam_linumetrica.md">.md</a>
+        <a class="link-mmd" href="diagramas/01b_grafica_ideam_linumetrica.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/01_Grafica_ideam_Linumetrica.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="card">
+    <img class="card-thumb" src="export/02_grafica_precipitacion_satelital_trmm.png" alt="02_grafica_precipitacion_satelital_trmm">
+    <div class="card-body">
+      <div class="card-num">02 · TRMM/GPM</div>
+      <div class="card-title">Precipitación Satelital TRMM/GPM</div>
+      <div class="card-desc">TRMM/GPM en un punto con cruce de datos IDEAM: 12 salidas, filtro La Niña, normativa IDEAM 2018.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/02_grafica_precipitacion_satelital_trmm.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/02_grafica_precipitacion_satelital_trmm.md">.md</a>
+        <a class="link-mmd" href="diagramas/02_grafica_precipitacion_satelital_trmm.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/02_GraficaPrecipitacionSatelital_TRMM.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="card">
+    <img class="card-thumb" src="export/03_descarga_imagenes_pro.png" alt="03_descarga_imagenes_pro">
+    <div class="card-body">
+      <div class="card-num">03 · S2/Landsat</div>
+      <div class="card-title">Descarga Imágenes PRO</div>
+      <div class="card-desc">Mosaicos multimisión Sentinel-2 + Landsat 1-9 con relleno de nubes (SLC-off para L7) y tiling dinámico.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/03_descarga_imagenes_pro.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/03_descarga_imagenes_pro.md">.md</a>
+        <a class="link-mmd" href="diagramas/03_descarga_imagenes_pro.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/03_DESCARGA_IMAGENES_PRO.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="card">
+    <img class="card-thumb" src="export/04_seleccion_mejores_imagenes.png" alt="04_seleccion_mejores_imagenes">
+    <div class="card-body">
+      <div class="card-num">04 · Selección</div>
+      <div class="card-title">Selección Mejores Imágenes</div>
+      <div class="card-desc">Selección manual/automática + relleno + mosaico de agua persistente (MNDWI).</div>
+      <div class="card-links">
+        <a class="link-png" href="export/04_seleccion_mejores_imagenes.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/04_seleccion_mejores_imagenes.md">.md</a>
+        <a class="link-mmd" href="diagramas/04_seleccion_mejores_imagenes.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/04_SELECION_MEJORES_IMAGENES.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="card">
+    <img class="card-thumb" src="export/05_descarga_imagen_sar.png" alt="05_descarga_imagen_sar">
+    <div class="card-body">
+      <div class="card-num">05 · SAR</div>
+      <div class="card-title">Descarga Imagen SAR</div>
+      <div class="card-desc">Descarga Sentinel-1 SAR: procesamiento radiométrico, remuestreo a 10 m, reproyección EPSG:4326.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/05_descarga_imagen_sar.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/05_descarga_imagen_sar.md">.md</a>
+        <a class="link-mmd" href="diagramas/05_descarga_imagen_sar.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/05_DESCARGA_IMAGEN_SAR.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="card">
+    <img class="card-thumb" src="export/06_unir_mndwi_sar.png" alt="06_unir_mndwi_sar">
+    <div class="card-body">
+      <div class="card-num">06 · Fusión</div>
+      <div class="card-title">Unir MNDWI + SAR</div>
+      <div class="card-desc">Fusión MNDWI (Sentinel-2) + SAR (Sentinel-1) para detección mejorada de masas de agua.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/06_unir_mndwi_sar.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/06_unir_mndwi_sar.md">.md</a>
+        <a class="link-mmd" href="diagramas/06_unir_mndwi_sar.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/06_UNIR_MNDWI_SAR.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="card">
+    <img class="card-thumb" src="export/07_extraer_mas_agua.png" alt="07_extraer_mas_agua">
+    <div class="card-body">
+      <div class="card-num">07 · Extracción</div>
+      <div class="card-title">Extraer Más Agua</div>
+      <div class="card-desc">Extracción de cuerpos de agua: composición de máscaras, filtrado por área, vectorización.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/07_extraer_mas_agua.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/07_extraer_mas_agua.md">.md</a>
+        <a class="link-mmd" href="diagramas/07_extraer_mas_agua.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/07_EXTRAER_MAS_AGUA.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="card">
+    <img class="card-thumb" src="export/08_geomorfologico.png" alt="08_geomorfologico">
+    <div class="card-body">
+      <div class="card-num">08 · Geomorfología</div>
+      <div class="card-title">Análisis Geomorfológico</div>
+      <div class="card-desc">Procesamiento DEM SRTM: pendiente, orientación, curvatura, perfil, unidades geomorfológicas.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/08_geomorfologico.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/08_geomorfologico.md">.md</a>
+        <a class="link-mmd" href="diagramas/08_geomorfologico.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/08_GEOMORFOLOGICO.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="card">
+    <img class="card-thumb" src="export/09_descargar_multibanda_s2.png" alt="09_descargar_multibanda_s2">
+    <div class="card-body">
+      <div class="card-num">09 · Sentinel-2</div>
+      <div class="card-title">Descarga Multibanda S2</div>
+      <div class="card-desc">Descarga de 6 bandas Sentinel-2 (B2,B3,B4,B8,B11,B12), factor de escala, máscara de nubes.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/09_descargar_multibanda_s2.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/09_descargar_multibanda_s2.md">.md</a>
+        <a class="link-mmd" href="diagramas/09_descargar_multibanda_s2.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/09.%20Descargar%20Multibanda%20S2.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <img class="card-thumb" src="export/10_coberturas.png" alt="10_coberturas">
+    <div class="card-body">
+      <div class="card-num">10 · Coberturas</div>
+      <div class="card-title">Generación Capas de Coberturas</div>
+      <div class="card-desc">Cálculo de índices NDVI, MNDWI, NDBI; clasificación Random Forest; extracción de ciénagas con connected components.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/10_coberturas.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/10_coberturas.md">.md</a>
+        <a class="link-mmd" href="diagramas/10_coberturas.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/10.%20COBERTURAS.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="card">
+    <img class="card-thumb" src="export/11_unir_componentes.png" alt="11_unir_componentes">
+    <div class="card-body">
+      <div class="card-num">11 · Unión</div>
+      <div class="card-title">Unir Componentes</div>
+      <div class="card-desc">Unión de componentes de entrada para el modelo de clasificación de coberturas.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/11_unir_componentes.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/11_unir_componentes.md">.md</a>
+        <a class="link-mmd" href="diagramas/11_unir_componentes.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/11%20.UNIR_COMPONENTES.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 -->
+  <div class="card">
+    <img class="card-thumb" src="export/12_entrenar_modelo_coberturas.png" alt="12_entrenar_modelo_coberturas">
+    <div class="card-body">
+      <div class="card-num">12 · ML</div>
+      <div class="card-title">Entrenar Modelo Coberturas</div>
+      <div class="card-desc">Entrenamiento del modelo Random Forest con datos de entrenamiento y exportación a .pkl.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/12_entrenar_modelo_coberturas.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/12_entrenar_modelo_coberturas.md">.md</a>
+        <a class="link-mmd" href="diagramas/12_entrenar_modelo_coberturas.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13 -->
+  <div class="card">
+    <img class="card-thumb" src="export/13_salidas_graficas_informe.png" alt="13_salidas_graficas_informe">
+    <div class="card-body">
+      <div class="card-num">13 · Informes</div>
+      <div class="card-title">Salidas Gráficas para Informe</div>
+      <div class="card-desc">Generación de mapas, leyendas, grillas EPSG:9377 para el informe técnico.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/13_salidas_graficas_informe.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/13_salidas_graficas_informe.md">.md</a>
+        <a class="link-mmd" href="diagramas/13_salidas_graficas_informe.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14 -->
+  <div class="card">
+    <img class="card-thumb" src="export/14_salidas_graficas_compuestas.png" alt="14_salidas_graficas_compuestas">
+    <div class="card-body">
+      <div class="card-num">14 · Compuestas</div>
+      <div class="card-title">Salidas Gráficas Compuestas</div>
+      <div class="card-desc">Generación de salidas gráficas compuestas: múltiples capas superpuestas, mosaicos, comparaciones.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/14_salidas_graficas_compuestas.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/14_salidas_graficas_compuestas.md">.md</a>
+        <a class="link-mmd" href="diagramas/14_salidas_graficas_compuestas.mmd">.mmd</a>
+        <a class="link-code" href="Codigos/14.%20salida_graficas_compuestas.py">script</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- General -->
+  <div class="card card-general">
+    <img class="card-thumb" src="export/general_pipeline_completo.png" alt="general_pipeline_completo">
+    <div class="card-body">
+      <div class="card-num">General</div>
+      <div class="card-title">Pipeline Completo — Vista General</div>
+      <div class="card-desc">Diagrama maestro del pipeline completo: desde descarga TRMM/GPM hasta salidas gráficas para informe.</div>
+      <div class="card-links">
+        <a class="link-png" href="export/general_pipeline_completo.png" target="_blank">PNG</a>
+        <a class="link-md" href="diagramas/general_pipeline_completo.md">.md</a>
+        <a class="link-mmd" href="diagramas/general_pipeline_completo.mmd">.mmd</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Generado automáticamente — <a href="https://github.com/jusebas93martinez/diagramas_multitemporal" style="color:var(--muted)">jusebas93martinez/diagramas_multitemporal</a></p>
+  <p style="margin-top:0.25rem">17 diagramas · 16 scripts Python · Exportados el 27/05/2026</p>
+</footer>
+
+</body>
+</html>

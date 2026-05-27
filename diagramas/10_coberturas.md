@@ -63,7 +63,7 @@ flowchart TD
     subgraph CIENAGAS ["Paso 3: Extraer ciénagas"]
       Z1["Crear máscara combinada:<br/>Agua (clase 3) OR<br/>Veg. Húmeda (clase 4)"] --> Z2
       Z2["Etiquetar componentes<br/>conectados"] --> Z3
-      Z3["Para cada componente:<br/>¿contiene al menos un píxel de agua?"} --> Z4
+      Z3["Para cada componente:<br/>¿contiene al menos un píxel de agua?"] --> Z4
       Z4{"¿Área ≥ mínima<br/>configurada (ha)?"} -->|"Sí"| Z5
       Z4 -->|"No"| DESCARTAR
       DESCARTAR["Descartar componente"] --> Z4
