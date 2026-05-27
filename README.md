@@ -24,7 +24,7 @@ editable en [mermaid.live](https://mermaid.live) o
 | 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Análisis estadístico de serie IDEAM (4 PNG + informe TXT) | ✅ [ver](./diagramas/01_grafica_ideam.md) | ✅ [abrir](./diagramas/01_grafica_ideam.mmd) |
 | 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Análisis de estación limnimétrica IDEAM (6 PNG + 2 TXT) | ✅ [ver](./diagramas/01b_grafica_ideam_linumetrica.md) | ✅ [abrir](./diagramas/01b_grafica_ideam_linumetrica.mmd) |
 | 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | TRMM/GPM en un punto + cruce con IDEAM (12 salidas, filtro La Niña, normativa IDEAM 2018) | ✅ [ver](./diagramas/02_grafica_precipitacion_satelital_trmm.md) | ✅ [abrir](./diagramas/02_grafica_precipitacion_satelital_trmm.mmd) |
-| 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ | ⏳ |
+| 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Mosaicos multimisión S2 + Landsat 1-9 con relleno de nubes y tiling dinámico | ✅ [ver](./diagramas/03_descarga_imagenes_pro.md) | ✅ [abrir](./diagramas/03_descarga_imagenes_pro.mmd) |
 | 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección de mejores imágenes por nubosidad | ⏳ | ⏳ |
 | 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ⏳ | ⏳ |
 | 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ | ⏳ |

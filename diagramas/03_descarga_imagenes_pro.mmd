@@ -1,0 +1,112 @@
+flowchart TD
+    S1([INICIO]) --> S2
+
+    subgraph F1 ["Fase 1: Configuración inicial y carga del AOI"]
+      direction TB
+      S2["Configurar parámetros:<br/>• Shapefile del área de estudio<br/>• Años y meses a procesar<br/>• Umbrales de nubes (escena 90%, AOI 5%)<br/>• Buffer del AOI, CRS de exportación<br/>• Límite por descarga GEE (48 MB)"]
+      S3["Inicializar Google Earth Engine<br/>(proyecto: precipitaciones-459216)"]
+      S4["Cargar el shapefile como geometría EE<br/>y aplicar buffer en km"]
+      S5["Calcular el rectángulo envolvente (bbox)<br/>una sola vez (se reutiliza para el tiling)"]
+
+      S2 --> S3 --> S4 --> S5
+    end
+
+    S5 --> L1
+
+    subgraph F2 ["Fase 2: Procesamiento por año / mes / misión"]
+      direction TB
+      L1[/"Para cada año<br/>configurado"/]
+      S6["Determinar las misiones disponibles<br/>según el año (S2, LC09, LC08, LT05,<br/>LT04, LM01-04 y LE07 como fallback)"]
+      D1{"¿Hay misiones<br/>disponibles ?"}
+      SKIP1["Reportar sin misiones<br/>y pasar al siguiente año"]
+      L2[/"Para cada mes objetivo<br/>(ENE...DIC)"/]
+      L3[/"Para cada misión<br/>en orden de preferencia"/]
+      D2{"¿La misión es Landsat 7 (fallback)<br/>y ya hay datos exportados ?"}
+      SKIP2["Omitir esta misión<br/>(no se necesita el fallback)"]
+      S7["Buscar imagen base del mes:<br/>3 intentos con umbrales AOI<br/>(estricto 5%, medio 15%, sin filtro)"]
+      D3{"¿Se encontró<br/>alguna imagen<br/>base ?"}
+      NEXTM["Probar siguiente misión<br/>de la lista"]
+      S8["Aplicar máscara de nubes a la colección<br/>seleccionar bandas estándar y, si es L7,<br/>aplicar la corrección SLC-off"]
+      S9["Calcular el índice de agua:<br/>MNDWI (TM/OLI/S2) o NDWI (MSS)"]
+      D4{"¿La mejor imagen tiene<br/>≤ 5% de nubes sobre el AOI ?"}
+      S10a["Dejar la imagen natural<br/>sin parches de otros meses"]
+      S10b["Rellenar pixeles con nube:<br/>para cada mes de relleno disponible,<br/>componer mediana y aplicar unmask;<br/>al final, suavizar con focal_mean"]
+      S11["Recortar la imagen al AOI"]
+
+      L1 --> S6 --> D1
+      D1 -->|"No"| SKIP1
+      D1 -->|"Sí"| L2 --> L3 --> D2
+      D2 -->|"Sí"| SKIP2
+      D2 -->|"No"| S7 --> D3
+      D3 -->|"No"| NEXTM
+      D3 -->|"Sí"| S8 --> S9 --> D4
+      D4 -->|"Sí"| S10a --> S11
+      D4 -->|"No"| S10b --> S11
+    end
+
+    S11 --> O1
+    NEXTM -.->|"siguiente misión"| L3
+    SKIP2 -.->|"siguiente misión"| L3
+
+    subgraph F3 ["Fase 3: Exportación de productos y registro"]
+      direction TB
+      O1["Definir 3 productos a exportar:<br/>• Índice de agua (MNDWI / NDWI)<br/>• Composición RGB color real<br/>• Composición IR (falso color)"]
+      L4[/"Para cada uno<br/>de los 3 productos"/]
+      S12["Calcular el número de tiles N×N<br/>para que cada tile no supere los 48 MB<br/>(usa la latitud media para grados → metros)"]
+      D5{"¿Cabe en<br/>un solo tile ?"}
+      S13a["Descargar directo con geemap.ee_export_image<br/>al archivo final"]
+      S13b["Descargar cada tile por separado<br/>y unirlos con rasterio.merge"]
+      S14["Registrar esta misión como exportada<br/>para este mes (bloquea Landsat 7 fallback)"]
+      O2["Guardar el log REPORTE_YYYY_MOSAICO.txt<br/>con el detalle por mes y misión"]
+
+      O1 --> L4 --> S12 --> D5
+      D5 -->|"Sí (1 tile)"| S13a --> S14
+      D5 -->|"No (N tiles)"| S13b --> S14
+      S14 --> O2
+      L4 -.->|"siguiente producto"| L4
+    end
+
+    S14 -.->|"siguiente misión"| L3
+    O2 -.->|"siguiente mes"| L2
+    O2 -.->|"fin del año"| L1
+    SKIP1 -.->|"siguiente año"| L1
+
+    O2 --> FIN
+    FIN([FIN: mosaicos y logs generados])
+
+    style S1   fill:#2E4057,color:#fff
+    style FIN  fill:#2E4057,color:#fff
+
+    style S2   fill:#048A81,color:#fff
+    style S3   fill:#048A81,color:#fff
+    style S4   fill:#048A81,color:#fff
+    style S5   fill:#048A81,color:#fff
+    style S6   fill:#048A81,color:#fff
+    style S7   fill:#048A81,color:#fff
+    style S8   fill:#048A81,color:#fff
+    style S9   fill:#048A81,color:#fff
+    style S10a fill:#048A81,color:#fff
+    style S10b fill:#048A81,color:#fff
+    style S11  fill:#048A81,color:#fff
+    style S12  fill:#048A81,color:#fff
+    style S13a fill:#048A81,color:#fff
+    style S13b fill:#048A81,color:#fff
+    style S14  fill:#048A81,color:#fff
+
+    style O1   fill:#048A81,color:#fff
+    style O2   fill:#4CAF50,color:#fff
+
+    style L1   fill:#54478C,color:#fff
+    style L2   fill:#54478C,color:#fff
+    style L3   fill:#54478C,color:#fff
+    style L4   fill:#54478C,color:#fff
+
+    style D1   fill:#F4A261,color:#000
+    style D2   fill:#F4A261,color:#000
+    style D3   fill:#F4A261,color:#000
+    style D4   fill:#F4A261,color:#000
+    style D5   fill:#F4A261,color:#000
+
+    style SKIP1 fill:#607D8B,color:#fff
+    style SKIP2 fill:#607D8B,color:#fff
+    style NEXTM fill:#607D8B,color:#fff
