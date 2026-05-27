@@ -1,0 +1,79 @@
+flowchart TD
+    S1([INICIO]) --> S2
+    S2["1. Autenticar e inicializar GEE<br/>proyecto: precipitaciones-459216"] --> S3
+    S3["2. Cargar AOI Colombia<br/>FAO/GAUL/2015/level0<br/>filter ADM0_NAME = Colombia"] --> S4
+    S4["geometry = col_fc.geometry().bounds()"] --> S5
+    S5["3. Parametros:<br/>rango 1997-08 a 2026-04<br/>EXPORT_SCALE_METERS = 10000<br/>output_dir = precipitacion_mensual_colombia_10km"] --> S6
+    S6["os.makedirs(output_dir, exist_ok=True)"] --> L1
+    L1[/"PARA cada año en 1997..2026"/] --> S7
+    S7["first_month = 8 si year==1997 sino 1<br/>last_month  = 4 si year==2026 sino 12"] --> L2
+    L2[/"PARA cada mes en first_month..last_month"/] --> S8
+    S8["start_date = ee.Date.fromYMD(year, month, 1)<br/>end_date   = start_date.advance(1, 'month')<br/>dias_mes   = monthrange(year, month)[1]"] --> D1
+    D1{"año &lt;= 2014 ?"}
+    D1 -->|"Sí"| C1["coleccion = TRMM/3B43V7<br/>.select('precipitation')<br/>source = TRMM"]
+    D1 -->|"No"| C2["coleccion = NASA/GPM_L3/IMERG_MONTHLY_V07<br/>.select('precipitation')<br/>source = GPM IMERG"]
+    C1 --> S9
+    C2 --> S9
+    S9["coll_period = coleccion.filterDate(start_date, end_date)"] --> D2
+    D2{"coll_period.size() == 0 ?"}
+    D2 -->|"Sí"| SK1["Print: No hay datos source<br/>continuar"]
+    D2 -->|"No"| S10
+    S10["rate_image = coll_period.first()  (mm/hr)<br/>horas_mes  = dias_mes * 24<br/>total      = rate_image.multiply(horas_mes)<br/>rename: monthly_precipitation_mm"] --> S11
+    S11["fname    = precip_mensual_YYYY_MM_colombia_10km.tif<br/>out_path = output_dir / fname"] --> D3
+    D3{"os.path.exists(out_path) ?"}
+    D3 -->|"Sí"| SK2["Print: ya existe<br/>continuar"]
+    D3 -->|"No"| T1
+    T1["INTENTAR: getDownloadURL<br/>scale=10000, crs=EPSG:4326,<br/>region=geometry, format=GEO_TIFF"] --> S12
+    S12["requests.get(url, stream=True)<br/>resp.raise_for_status()"] --> D4
+    D4{"¿Contenido es ZIP ?"}
+    D4 -->|"Sí"| Z1["zipfile.ZipFile -> extraer .tif<br/>guardar en out_path"]
+    D4 -->|"No"| Z2["Guardar content directo<br/>en out_path"]
+    Z1 --> OK
+    Z2 --> OK
+    OK["Print: Guardado out_path"]
+
+    S12 -.->|"Excepción"| ERR["Print: Error al procesar"]
+
+    OK  --> L2
+    ERR --> L2
+    SK1 --> L2
+    SK2 --> L2
+
+    L2 -.->|"fin del mes"| L1
+    L1 -.->|"fin del año"| FIN
+    FIN([FIN: Proceso completado])
+
+    style S1   fill:#2E4057,color:#fff
+    style FIN  fill:#2E4057,color:#fff
+
+    style S2   fill:#048A81,color:#fff
+    style S3   fill:#048A81,color:#fff
+    style S4   fill:#048A81,color:#fff
+    style S5   fill:#048A81,color:#fff
+    style S6   fill:#048A81,color:#fff
+    style S7   fill:#048A81,color:#fff
+    style S8   fill:#048A81,color:#fff
+    style S9   fill:#048A81,color:#fff
+    style S10  fill:#048A81,color:#fff
+    style S11  fill:#048A81,color:#fff
+    style S12  fill:#048A81,color:#fff
+    style T1   fill:#048A81,color:#fff
+    style Z1   fill:#048A81,color:#fff
+    style Z2   fill:#048A81,color:#fff
+
+    style L1   fill:#54478C,color:#fff
+    style L2   fill:#54478C,color:#fff
+
+    style D1   fill:#F4A261,color:#000
+    style D2   fill:#F4A261,color:#000
+    style D3   fill:#F4A261,color:#000
+    style D4   fill:#F4A261,color:#000
+
+    style C1   fill:#2196F3,color:#fff
+    style C2   fill:#9C27B0,color:#fff
+
+    style SK1  fill:#E63946,color:#fff
+    style SK2  fill:#607D8B,color:#fff
+    style ERR  fill:#E63946,color:#fff
+
+    style OK   fill:#4CAF50,color:#fff

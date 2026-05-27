@@ -27,6 +27,11 @@ mm/mes y resolución de 10 km.
 
 ## Diagrama de flujo
 
+> 📝 **Fuente editable:** [`00_descarga_raster_trmm_gpm.mmd`](./00_descarga_raster_trmm_gpm.mmd)
+> — el bloque que sigue es una copia para que GitHub lo renderice. Si editas
+> el `.mmd`, pega aquí el contenido actualizado (ver sección
+> [Edición visual del diagrama](#edición-visual-del-diagrama)).
+
 ```mermaid
 flowchart TD
     S1([INICIO]) --> S2
@@ -35,42 +40,42 @@ flowchart TD
     S4["geometry = col_fc.geometry().bounds()"] --> S5
     S5["3. Parametros:<br/>rango 1997-08 a 2026-04<br/>EXPORT_SCALE_METERS = 10000<br/>output_dir = precipitacion_mensual_colombia_10km"] --> S6
     S6["os.makedirs(output_dir, exist_ok=True)"] --> L1
-    L1[/"FOR year en 1997..2026"/] --> S7
+    L1[/"PARA cada año en 1997..2026"/] --> S7
     S7["first_month = 8 si year==1997 sino 1<br/>last_month  = 4 si year==2026 sino 12"] --> L2
-    L2[/"FOR month en first_month..last_month"/] --> S8
+    L2[/"PARA cada mes en first_month..last_month"/] --> S8
     S8["start_date = ee.Date.fromYMD(year, month, 1)<br/>end_date   = start_date.advance(1, 'month')<br/>dias_mes   = monthrange(year, month)[1]"] --> D1
-    D1{"year &lt;= 2014 ?"}
-    D1 -->|"Si"| C1["coleccion = TRMM/3B43V7<br/>.select('precipitation')<br/>source = TRMM"]
+    D1{"año &lt;= 2014 ?"}
+    D1 -->|"Sí"| C1["coleccion = TRMM/3B43V7<br/>.select('precipitation')<br/>source = TRMM"]
     D1 -->|"No"| C2["coleccion = NASA/GPM_L3/IMERG_MONTHLY_V07<br/>.select('precipitation')<br/>source = GPM IMERG"]
     C1 --> S9
     C2 --> S9
     S9["coll_period = coleccion.filterDate(start_date, end_date)"] --> D2
     D2{"coll_period.size() == 0 ?"}
-    D2 -->|"Si"| SK1["Print: No hay datos source<br/>continue"]
+    D2 -->|"Sí"| SK1["Print: No hay datos source<br/>continuar"]
     D2 -->|"No"| S10
     S10["rate_image = coll_period.first()  (mm/hr)<br/>horas_mes  = dias_mes * 24<br/>total      = rate_image.multiply(horas_mes)<br/>rename: monthly_precipitation_mm"] --> S11
     S11["fname    = precip_mensual_YYYY_MM_colombia_10km.tif<br/>out_path = output_dir / fname"] --> D3
     D3{"os.path.exists(out_path) ?"}
-    D3 -->|"Si"| SK2["Print: ya existe<br/>continue"]
+    D3 -->|"Sí"| SK2["Print: ya existe<br/>continuar"]
     D3 -->|"No"| T1
-    T1["TRY: getDownloadURL<br/>scale=10000, crs=EPSG:4326,<br/>region=geometry, format=GEO_TIFF"] --> S12
+    T1["INTENTAR: getDownloadURL<br/>scale=10000, crs=EPSG:4326,<br/>region=geometry, format=GEO_TIFF"] --> S12
     S12["requests.get(url, stream=True)<br/>resp.raise_for_status()"] --> D4
-    D4{"Contenido es ZIP ?"}
-    D4 -->|"Si"| Z1["zipfile.ZipFile -> extraer .tif<br/>guardar en out_path"]
+    D4{"¿Contenido es ZIP ?"}
+    D4 -->|"Sí"| Z1["zipfile.ZipFile -> extraer .tif<br/>guardar en out_path"]
     D4 -->|"No"| Z2["Guardar content directo<br/>en out_path"]
     Z1 --> OK
     Z2 --> OK
     OK["Print: Guardado out_path"]
 
-    S12 -.->|"Exception"| ERR["Print: Error al procesar"]
+    S12 -.->|"Excepción"| ERR["Print: Error al procesar"]
 
     OK  --> L2
     ERR --> L2
     SK1 --> L2
     SK2 --> L2
 
-    L2 -.->|"fin month"| L1
-    L1 -.->|"fin year"| FIN
+    L2 -.->|"fin del mes"| L1
+    L1 -.->|"fin del año"| FIN
     FIN([FIN: Proceso completado])
 
     style S1   fill:#2E4057,color:#fff
@@ -185,3 +190,42 @@ Instalación:
 pip install earthengine-api requests
 earthengine authenticate
 ```
+
+---
+
+## Edición visual del diagrama
+
+El archivo [`00_descarga_raster_trmm_gpm.mmd`](./00_descarga_raster_trmm_gpm.mmd)
+contiene **solo el código Mermaid** (sin Markdown alrededor) para que puedas
+editarlo en herramientas visuales:
+
+### Opción 1 — mermaid.live (rápido, sin cuenta)
+
+1. Abre https://mermaid.live
+2. En el panel izquierdo, **borra el contenido por defecto**.
+3. Abre `00_descarga_raster_trmm_gpm.mmd` en cualquier editor → copia todo →
+   pégalo en mermaid.live.
+4. La preview del centro se actualiza en vivo.
+5. Para guardar los cambios: copia el código modificado de vuelta al `.mmd` y
+   actualiza también el bloque ```` ```mermaid ```` de este `.md` para que
+   GitHub lo renderice.
+
+### Opción 2 — Mermaid Chart (drag & drop visual)
+
+1. Crea cuenta gratis en https://www.mermaidchart.com
+2. **New diagram → Import → Mermaid file** → sube el `.mmd`.
+3. Cambia a modo *Visual editor* para mover nodos con el mouse.
+4. Cuando termines: **Export → Mermaid code** → reemplaza el `.mmd` y el
+   bloque en este `.md`.
+
+### Opción 3 — VS Code (preview lateral local)
+
+1. Instala la extensión recomendada
+   [`tomoyukim.vscode-mermaid-editor`](https://marketplace.visualstudio.com/items?itemName=tomoyukim.vscode-mermaid-editor).
+2. Abre el `.mmd` → `Ctrl+Shift+P` → **Mermaid Editor: Preview to the Side**.
+3. Edita el `.mmd` y ve los cambios al instante.
+
+> 🔁 **Importante:** mientras no haya un script de sincronización, debes
+> mantener el `.mmd` y el bloque ```` ```mermaid ```` de este `.md`
+> **idénticos**. El `.mmd` es la fuente editable; el bloque del `.md` es la
+> copia que GitHub renderiza.

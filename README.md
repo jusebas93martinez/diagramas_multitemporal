@@ -13,27 +13,45 @@ Cada diagrama documenta **un script Python** ubicado en
 
 ## Índice de diagramas
 
-| # | Código fuente | Descripción | Diagrama |
-|---|---|---|---|
-| 00 | [`00._Descarga_Raster_TRMM.py`](./Codigos/00._Descarga_Raster_TRMM.py) | Descarga precipitación mensual TRMM/GPM desde GEE | ✅ [ver](./diagramas/00_descarga_raster_trmm_gpm.md) |
-| 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Gráficas de series IDEAM | ⏳ pendiente |
-| 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Gráficas IDEAM (variante lineal/métrica) | ⏳ pendiente |
-| 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | Gráficas de precipitación satelital | ⏳ pendiente |
-| 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ pendiente |
-| 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección de mejores imágenes por nubosidad | ⏳ pendiente |
-| 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ⏳ pendiente |
-| 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ pendiente |
-| 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ⏳ pendiente |
-| 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ⏳ pendiente |
-| 09 | [`09. Descargar Multibanda S2.py`](./Codigos/09.%20Descargar%20Multibanda%20S2.py) | Descarga multibanda Sentinel-2 | ⏳ pendiente |
-| 10 | [`10. COBERTURAS.py`](./Codigos/10.%20COBERTURAS.py) | Generación de capas de coberturas | ⏳ pendiente |
-| 11 | [`11 .UNIR_COMPONENTES.py`](./Codigos/11%20.UNIR_COMPONENTES.py) | Unión de componentes (insumos modelo) | ⏳ pendiente |
-| 12 | [`12. ENTRENAR_MODELO_COBERTURAS.py`](./Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py) | Entrenamiento modelo clasificación coberturas | ⏳ pendiente |
-| 13 | [`13. SALIDAS_GRAFICAS_INFORME.py`](./Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py) | Salidas gráficas para informe | ⏳ pendiente |
-| 14 | [`14. salida_graficas_compuestas.py`](./Codigos/14.%20salida_graficas_compuestas.py) | Salidas gráficas compuestas | ⏳ pendiente |
-| ▣ | — | **Diagrama general del pipeline completo** | ⏳ pendiente |
+Cada entrada documentada incluye **dos archivos** en `diagramas/`:
+un `.md` (que GitHub renderiza directamente) y un `.mmd` (código Mermaid puro,
+editable en [mermaid.live](https://mermaid.live) o
+[Mermaid Chart](https://www.mermaidchart.com)).
+
+| # | Código fuente | Descripción | Doc (`.md`) | Editable (`.mmd`) |
+|---|---|---|---|---|
+| 00 | [`00._Descarga_Raster_TRMM.py`](./Codigos/00._Descarga_Raster_TRMM.py) | Descarga precipitación mensual TRMM/GPM desde GEE | ✅ [ver](./diagramas/00_descarga_raster_trmm_gpm.md) | ✅ [abrir](./diagramas/00_descarga_raster_trmm_gpm.mmd) |
+| 01 | [`01_Grafica_ideam.py`](./Codigos/01_Grafica_ideam.py) | Gráficas de series IDEAM | ⏳ | ⏳ |
+| 01b | [`01_Grafica_ideam_Linumetrica.py`](./Codigos/01_Grafica_ideam_Linumetrica.py) | Gráficas IDEAM (variante lineal/métrica) | ⏳ | ⏳ |
+| 02 | [`02_GraficaPrecipitacionSatelital_TRMM.py`](./Codigos/02_GraficaPrecipitacionSatelital_TRMM.py) | Gráficas de precipitación satelital | ⏳ | ⏳ |
+| 03 | [`03_DESCARGA_IMAGENES_PRO.py`](./Codigos/03_DESCARGA_IMAGENES_PRO.py) | Descarga imágenes ópticas (Sentinel-2) | ⏳ | ⏳ |
+| 04 | [`04_SELECION_MEJORES_IMAGENES.py`](./Codigos/04_SELECION_MEJORES_IMAGENES.py) | Selección de mejores imágenes por nubosidad | ⏳ | ⏳ |
+| 05 | [`05_DESCARGA_IMAGEN_SAR.py`](./Codigos/05_DESCARGA_IMAGEN_SAR.py) | Descarga Sentinel-1 SAR | ⏳ | ⏳ |
+| 06 | [`06_UNIR_MNDWI_SAR.py`](./Codigos/06_UNIR_MNDWI_SAR.py) | Fusión MNDWI (S2) + SAR para detección de agua | ⏳ | ⏳ |
+| 07 | [`07_EXTRAER_MAS_AGUA.py`](./Codigos/07_EXTRAER_MAS_AGUA.py) | Extracción de cuerpos de agua | ⏳ | ⏳ |
+| 08 | [`08_GEOMORFOLOGICO.py`](./Codigos/08_GEOMORFOLOGICO.py) | Análisis geomorfológico | ⏳ | ⏳ |
+| 09 | [`09. Descargar Multibanda S2.py`](./Codigos/09.%20Descargar%20Multibanda%20S2.py) | Descarga multibanda Sentinel-2 | ⏳ | ⏳ |
+| 10 | [`10. COBERTURAS.py`](./Codigos/10.%20COBERTURAS.py) | Generación de capas de coberturas | ⏳ | ⏳ |
+| 11 | [`11 .UNIR_COMPONENTES.py`](./Codigos/11%20.UNIR_COMPONENTES.py) | Unión de componentes (insumos modelo) | ⏳ | ⏳ |
+| 12 | [`12. ENTRENAR_MODELO_COBERTURAS.py`](./Codigos/12.%20ENTRENAR_MODELO_COBERTURAS.py) | Entrenamiento modelo clasificación coberturas | ⏳ | ⏳ |
+| 13 | [`13. SALIDAS_GRAFICAS_INFORME.py`](./Codigos/13.%20SALIDAS_GRAFICAS_INFORME.py) | Salidas gráficas para informe | ⏳ | ⏳ |
+| 14 | [`14. salida_graficas_compuestas.py`](./Codigos/14.%20salida_graficas_compuestas.py) | Salidas gráficas compuestas | ⏳ | ⏳ |
+| ▣ | — | **Diagrama general del pipeline completo** | ⏳ | ⏳ |
 
 > Leyenda: ✅ documentado · ⏳ pendiente · 🔧 en revisión
+
+### Cómo editar un diagrama visualmente
+
+1. Abre el `.mmd` correspondiente (ej. `diagramas/00_descarga_raster_trmm_gpm.mmd`).
+2. Copia todo su contenido.
+3. Pégalo en [mermaid.live](https://mermaid.live) (preview en vivo) o impórtalo
+   en [Mermaid Chart](https://www.mermaidchart.com) (editor drag & drop).
+4. Edita y vuelve a pegar el resultado en el `.mmd` **y** en el bloque
+   ```` ```mermaid ```` del `.md` (deben quedar idénticos para que GitHub lo
+   muestre actualizado).
+
+> Hay instrucciones detalladas en la sección *Edición visual del diagrama*
+> de cada `.md` (ej. [diagramas/00_descarga_raster_trmm_gpm.md](./diagramas/00_descarga_raster_trmm_gpm.md#edición-visual-del-diagrama)).
 
 ---
 
